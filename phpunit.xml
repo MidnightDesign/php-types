@@ -2,9 +2,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
 >
-    <testsuite name="Functional">
-        <directory>tests/Functional</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="Functional">
+            <directory>tests/Functional</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
     <coverage>
         <include>
             <directory>src</directory>
