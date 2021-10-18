@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PhpTypes\Test\Functional;
+
+use PhpTypes\Parser;
+use PHPUnit\Framework\TestCase;
+
+use function sprintf;
+
+final class ParseAndToStringRoundtripTest extends TestCase
+{
+    private const CASES = [
+        // Simple
+        'string',
+        'int',
+        'float',
+        'bool',
+        // Unions
+        'string|int',
+        'string|int|float',
+        'list<string>|list<int>',
+        'list<string|int>',
+        // Intersections
+        'FooInterface&BarInterface',
+        // Generics
+        'list<string>',
+        'array<string, bool>',
+        'array<string, array<string, int>>',
+        // Callable
+        'callable(): void',
+        'callable(string): void',
+        'callable(string): int',
+        'callable(string, bool): float',
+        'callable(list<int>, string, array<int, bool>): string',
+        // Tuples
+        'array{string, int}',
+        'array{array{int, bool}, int}',
+        // Structs
+        'array{foo: string}',
+        'array{foo: string, bar: int}',
+        'array{optional?: float}',
+    ];
+
+    /**
+     * @dataProvider cases
+     */
+    public function testRoundtrip(string $from, string $expected): void
+    {
+        $actual = (string)Parser::parse($from);
+
+        self::assertSame($expected, $actual);
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public function cases(): iterable
+    {
+        foreach (self::CASES as $expected) {
+            $from = $expected;
+            yield sprintf('%s -> %s', $from, $expected) => [$from, $expected];
+        }
+    }
+}
