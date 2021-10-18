@@ -45,6 +45,11 @@ class TypeCompatibilityTest extends TestCase
         ['array{foo: string, bar: int}', 'array{foo: string}'],
         ['array{foo: string, bar: int}', 'array{bar: int, foo: string}'],
         ['array{foo?: string}', 'array{foo?: string}'],
+        // Special types
+        ['class-string', 'string'],
+        // Aliases
+        ['string', 'array-key'],
+        ['int', 'array-key'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple
@@ -72,6 +77,11 @@ class TypeCompatibilityTest extends TestCase
         ['array{bar: string}', 'array{foo?: string, bar: int}'],
         // Intersection
         ['bool', 'array{foo: string}&array{bar: int}'],
+        // Special types
+        ['string', 'class-string'],
+        // Aliases
+        ['float', 'array-key'],
+        ['bool', 'array-key'],
     ];
 
     /**

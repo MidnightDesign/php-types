@@ -37,6 +37,16 @@ final class SimpleType implements TypeInterface
         return self::create('mixed');
     }
 
+    public static function string(): self
+    {
+        return new self('string');
+    }
+
+    public static function int(): self
+    {
+        return new self('int');
+    }
+
     public function __toString(): string
     {
         $typeArgs = '';
@@ -48,11 +58,17 @@ final class SimpleType implements TypeInterface
 
     public function isSupertypeOf(TypeInterface $other): bool
     {
+        if ($this->name === 'array-key') {
+            return UnionType::arrayKey()->isSupertypeOf($other);
+        }
         if ($this->name === 'mixed') {
             return true;
         }
         if (!$other instanceof self) {
             return false;
+        }
+        if ($this->name === 'string' && $other->name === 'class-string') {
+            return true;
         }
         return $this->name === $other->name;
     }

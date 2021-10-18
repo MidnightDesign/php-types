@@ -34,7 +34,7 @@ curlyArrayEntry
     ;
 
 Identifier
-    : Letter [a-zA-Z0-9]+
+    : Letter [a-zA-Z0-9-]*
     ;
 
 Letter

@@ -23,6 +23,11 @@ final class UnionType implements TypeInterface
         return new self($alternatives);
     }
 
+    public static function arrayKey(): self
+    {
+        return new self([SimpleType::string(), SimpleType::int()]);
+    }
+
     public function __toString(): string
     {
         return implode('|', $this->alternatives);
