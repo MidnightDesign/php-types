@@ -17,8 +17,14 @@ final class SimpleType implements TypeInterface
     {
     }
 
-    public static function create(string $name): self
+    public static function create(string $name): TypeInterface
     {
+        if ($name === 'string') {
+            return StringType::instance();
+        }
+        if ($name === 'int') {
+            return IntType::instance();
+        }
         return new self($name);
     }
 
@@ -32,7 +38,7 @@ final class SimpleType implements TypeInterface
         return $instance;
     }
 
-    public static function mixed(): self
+    public static function mixed(): TypeInterface
     {
         return self::create('mixed');
     }

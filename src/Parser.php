@@ -14,7 +14,10 @@ use PhpTypesParser\Context\CurlyArrayExprContext;
 use PhpTypesParser\Context\GenericContext;
 use PhpTypesParser\Context\GenericExprContext;
 use PhpTypesParser\Context\IntersectionContext;
+use PhpTypesParser\Context\IntLiteralExprContext;
 use PhpTypesParser\Context\SimpleExprContext;
+use PhpTypesParser\Context\StringLiteralContext;
+use PhpTypesParser\Context\StringLiteralExprContext;
 use PhpTypesParser\Context\TypeExprContext;
 use PhpTypesParser\Context\UnionContext;
 use PhpTypesParser\PhpTypesLexer;
@@ -59,6 +62,14 @@ class Parser
         }
         if ($context instanceof UnionContext) {
             return self::fromUnion($context);
+        }
+        if ($context instanceof StringLiteralExprContext) {
+            $stringLiteral = $context->stringLiteral();
+            assert($stringLiteral !== null);
+            return self::fromStringLiteral($stringLiteral);
+        }
+        if ($context instanceof IntLiteralExprContext) {
+            return new IntLiteralType((int)$context->getText());
         }
         assert($context instanceof IntersectionContext);
         return self::fromIntersection($context);
@@ -154,5 +165,14 @@ class Parser
             $types[] = self::parse($type->getText());
         }
         return IntersectionType::create($types);
+    }
+
+    private static function fromStringLiteral(StringLiteralContext $stringLiteral): StringLiteralType
+    {
+        $identifier = $stringLiteral->Identifier();
+        assert($identifier !== null);
+        $text = $identifier->getText();
+        assert($text !== null);
+        return new StringLiteralType($text);
     }
 }
