@@ -61,6 +61,19 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
+	public function enterStringLiteralExpr(Context\StringLiteralExprContext $context) : void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitStringLiteralExpr(Context\StringLiteralExprContext $context) : void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
 	public function enterCurlyArrayExpr(Context\CurlyArrayExprContext $context) : void {}
 
 	/**
@@ -173,6 +186,19 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 * The default implementation does nothing.
 	 */
 	public function exitCurlyArrayEntry(Context\CurlyArrayEntryContext $context) : void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function enterStringLiteral(Context\StringLiteralContext $context) : void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitStringLiteral(Context\StringLiteralContext $context) : void {}
 
 	/**
 	 * {@inheritdoc}

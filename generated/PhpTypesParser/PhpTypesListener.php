@@ -49,6 +49,18 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitGenericExpr(Context\GenericExprContext $context) : void;
 	/**
+	 * Enter a parse tree produced by the `StringLiteralExpr`
+	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterStringLiteralExpr(Context\StringLiteralExprContext $context) : void;
+	/**
+	 * Exit a parse tree produced by the `StringLiteralExpr` labeled alternative
+	 * in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitStringLiteralExpr(Context\StringLiteralExprContext $context) : void;
+	/**
 	 * Enter a parse tree produced by the `CurlyArrayExpr`
 	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
 	 * @param $context The parse tree.
@@ -144,4 +156,14 @@ interface PhpTypesListener extends ParseTreeListener {
 	 * @param $context The parse tree.
 	 */
 	public function exitCurlyArrayEntry(Context\CurlyArrayEntryContext $context) : void;
+	/**
+	 * Enter a parse tree produced by {@see PhpTypesParser::stringLiteral()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterStringLiteral(Context\StringLiteralContext $context) : void;
+	/**
+	 * Exit a parse tree produced by {@see PhpTypesParser::stringLiteral()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitStringLiteral(Context\StringLiteralContext $context) : void;
 }

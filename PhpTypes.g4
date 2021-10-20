@@ -5,6 +5,7 @@ typeExpr
     | generic                               #GenericExpr
     | callableType                          #CallableExpr
     | curlyArray                            #CurlyArrayExpr
+    | stringLiteral                         #StringLiteralExpr
     | typeExpr '|' typeExpr ('|' typeExpr)* #Union
     | typeExpr '&' typeExpr ('&' typeExpr)* #Intersection
     ;
@@ -31,6 +32,11 @@ curlyArray
 
 curlyArrayEntry
     : (Identifier optional='?'? ':')? typeExpr
+    ;
+
+stringLiteral
+    : '\'' Identifier '\''
+    | '"' Identifier '"'
     ;
 
 Identifier

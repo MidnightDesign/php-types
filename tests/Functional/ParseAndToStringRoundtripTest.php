@@ -7,6 +7,7 @@ namespace PhpTypes\Test\Functional;
 use PhpTypes\Parser;
 use PHPUnit\Framework\TestCase;
 
+use function is_int;
 use function sprintf;
 
 final class ParseAndToStringRoundtripTest extends TestCase
@@ -41,6 +42,9 @@ final class ParseAndToStringRoundtripTest extends TestCase
         'array{foo: string}',
         'array{foo: string, bar: int}',
         'array{optional?: float}',
+        // Literals
+        '\'test\'',
+        '"test"' => '\'test\'',
     ];
 
     /**
@@ -58,8 +62,10 @@ final class ParseAndToStringRoundtripTest extends TestCase
      */
     public function cases(): iterable
     {
-        foreach (self::CASES as $expected) {
-            $from = $expected;
+        foreach (self::CASES as $from => $expected) {
+            if (is_int($from)) {
+                $from = $expected;
+            }
             yield sprintf('%s -> %s', $from, $expected) => [$from, $expected];
         }
     }
