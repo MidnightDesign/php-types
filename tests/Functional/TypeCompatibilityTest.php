@@ -45,6 +45,26 @@ class TypeCompatibilityTest extends TestCase
         ['array{foo: string, bar: int}', 'array{foo: string}'],
         ['array{foo: string, bar: int}', 'array{bar: int, foo: string}'],
         ['array{foo?: string}', 'array{foo?: string}'],
+        // String Literals
+        ['"test"', '"test"'],
+        ['\'test\'', '\'test\''],
+        ['\'test\'', '"test"'],
+        ['"test"', '\'test\''],
+        ['"test"', 'string'],
+        ['\'test\'', 'string'],
+        ['\'test\'', 'mixed'],
+        ['"test"', 'mixed'],
+        // Int Literals
+        ['0', '0'],
+        ['0', 'int'],
+        ['1', '1'],
+        ['1', 'int'],
+        ['69', '69'],
+        ['69', 'int'],
+        ['-1', '-1'],
+        ['-1', 'int'],
+        ['-69', '-69'],
+        ['-69', 'int'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple
@@ -72,6 +92,12 @@ class TypeCompatibilityTest extends TestCase
         ['array{bar: string}', 'array{foo?: string, bar: int}'],
         // Intersection
         ['bool', 'array{foo: string}&array{bar: int}'],
+        // Literal
+        ['string', '\'test\''],
+        ['string', '"test"'],
+        ['"foo"', '"bar"'],
+        ['23', '27'],
+        ['int', '27'],
     ];
 
     /**
