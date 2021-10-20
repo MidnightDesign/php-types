@@ -44,6 +44,16 @@ interface PhpTypesVisitor extends ParseTreeVisitor
 	public function visitGenericExpr(Context\GenericExprContext $context);
 
 	/**
+	 * Visit a parse tree produced by the `IntLiteralExpr` labeled alternative
+	 * in {@see PhpTypesParser::typeExpr()}.
+	 *
+	 * @param Context\IntLiteralExprContext $context The parse tree.
+	 *
+	 * @return mixed The visitor result.
+	 */
+	public function visitIntLiteralExpr(Context\IntLiteralExprContext $context);
+
+	/**
 	 * Visit a parse tree produced by the `StringLiteralExpr` labeled alternative
 	 * in {@see PhpTypesParser::typeExpr()}.
 	 *

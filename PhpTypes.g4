@@ -6,6 +6,7 @@ typeExpr
     | callableType                          #CallableExpr
     | curlyArray                            #CurlyArrayExpr
     | stringLiteral                         #StringLiteralExpr
+    | IntLiteral                            #IntLiteralExpr
     | typeExpr '|' typeExpr ('|' typeExpr)* #Union
     | typeExpr '&' typeExpr ('&' typeExpr)* #Intersection
     ;
@@ -39,6 +40,11 @@ stringLiteral
     | '"' Identifier '"'
     ;
 
+IntLiteral
+    : Minus? NonZeroDigit Digit*
+    | Zero
+    ;
+
 Identifier
     : Letter [a-zA-Z0-9]+
     ;
@@ -48,11 +54,23 @@ Letter
     ;
 
 Number
-    : [1-9] Digit *
+    : [1-9] Digit*
     ;
 
 Digit
     : [0-9]
+    ;
+
+Minus
+    : '-'
+    ;
+
+NonZeroDigit
+    : [1-9]
+    ;
+
+Zero
+    : '0'
     ;
 
 WS

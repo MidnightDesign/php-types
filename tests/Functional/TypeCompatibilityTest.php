@@ -45,7 +45,7 @@ class TypeCompatibilityTest extends TestCase
         ['array{foo: string, bar: int}', 'array{foo: string}'],
         ['array{foo: string, bar: int}', 'array{bar: int, foo: string}'],
         ['array{foo?: string}', 'array{foo?: string}'],
-        // Literals
+        // String Literals
         ['"test"', '"test"'],
         ['\'test\'', '\'test\''],
         ['\'test\'', '"test"'],
@@ -54,6 +54,17 @@ class TypeCompatibilityTest extends TestCase
         ['\'test\'', 'string'],
         ['\'test\'', 'mixed'],
         ['"test"', 'mixed'],
+        // Int Literals
+        ['0', '0'],
+        ['0', 'int'],
+        ['1', '1'],
+        ['1', 'int'],
+        ['69', '69'],
+        ['69', 'int'],
+        ['-1', '-1'],
+        ['-1', 'int'],
+        ['-69', '-69'],
+        ['-69', 'int'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple
@@ -84,6 +95,9 @@ class TypeCompatibilityTest extends TestCase
         // Literal
         ['string', '\'test\''],
         ['string', '"test"'],
+        ['"foo"', '"bar"'],
+        ['23', '27'],
+        ['int', '27'],
     ];
 
     /**

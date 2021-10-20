@@ -49,6 +49,18 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitGenericExpr(Context\GenericExprContext $context) : void;
 	/**
+	 * Enter a parse tree produced by the `IntLiteralExpr`
+	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterIntLiteralExpr(Context\IntLiteralExprContext $context) : void;
+	/**
+	 * Exit a parse tree produced by the `IntLiteralExpr` labeled alternative
+	 * in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitIntLiteralExpr(Context\IntLiteralExprContext $context) : void;
+	/**
 	 * Enter a parse tree produced by the `StringLiteralExpr`
 	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
 	 * @param $context The parse tree.

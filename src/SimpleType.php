@@ -22,6 +22,9 @@ final class SimpleType implements TypeInterface
         if ($name === 'string') {
             return StringType::instance();
         }
+        if ($name === 'int') {
+            return IntType::instance();
+        }
         return new self($name);
     }
 

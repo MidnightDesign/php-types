@@ -14,6 +14,7 @@ use PhpTypesParser\Context\CurlyArrayExprContext;
 use PhpTypesParser\Context\GenericContext;
 use PhpTypesParser\Context\GenericExprContext;
 use PhpTypesParser\Context\IntersectionContext;
+use PhpTypesParser\Context\IntLiteralExprContext;
 use PhpTypesParser\Context\SimpleExprContext;
 use PhpTypesParser\Context\StringLiteralContext;
 use PhpTypesParser\Context\StringLiteralExprContext;
@@ -66,6 +67,9 @@ class Parser
             $stringLiteral = $context->stringLiteral();
             assert($stringLiteral !== null);
             return self::fromStringLiteral($stringLiteral);
+        }
+        if ($context instanceof IntLiteralExprContext) {
+            return new IntLiteralType((int)$context->getText());
         }
         assert($context instanceof IntersectionContext);
         return self::fromIntersection($context);

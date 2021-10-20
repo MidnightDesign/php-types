@@ -45,6 +45,12 @@ final class ParseAndToStringRoundtripTest extends TestCase
         // Literals
         '\'test\'',
         '"test"' => '\'test\'',
+        '0',
+        '1',
+        '69',
+        '-1',
+        '-23',
+        '99999999',
     ];
 
     /**

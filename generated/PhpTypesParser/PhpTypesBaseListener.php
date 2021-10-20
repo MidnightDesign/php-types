@@ -61,6 +61,19 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
+	public function enterIntLiteralExpr(Context\IntLiteralExprContext $context) : void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitIntLiteralExpr(Context\IntLiteralExprContext $context) : void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
 	public function enterStringLiteralExpr(Context\StringLiteralExprContext $context) : void {}
 
 	/**
