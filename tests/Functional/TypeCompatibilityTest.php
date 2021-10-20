@@ -106,7 +106,7 @@ class TypeCompatibilityTest extends TestCase
     public function testCompatibleTypes(string $subtype, string $supertype): void
     {
         self::assertTrue(
-            Parser::parse($supertype)->isSupertypeOf(Parser::parse($subtype)),
+            Parser::create()->parse($supertype)->isSupertypeOf(Parser::create()->parse($subtype)),
             \Safe\sprintf('Failed asserting that %s is a subtype of %s.', $subtype, $supertype)
         );
     }
@@ -127,7 +127,7 @@ class TypeCompatibilityTest extends TestCase
     public function testIncompatibleTypes(string $subtype, string $supertype): void
     {
         self::assertFalse(
-            Parser::parse($supertype)->isSupertypeOf(Parser::parse($subtype)),
+            Parser::create()->parse($supertype)->isSupertypeOf(Parser::create()->parse($subtype)),
             \Safe\sprintf('Expected %s to not be a subtype of %s, but it actually is.', $subtype, $supertype)
         );
     }

@@ -58,7 +58,7 @@ final class ParseAndToStringRoundtripTest extends TestCase
      */
     public function testRoundtrip(string $from, string $expected): void
     {
-        $actual = (string)Parser::parse($from);
+        $actual = (string)Parser::create()->parse($from);
 
         self::assertSame($expected, $actual);
     }

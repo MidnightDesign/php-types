@@ -26,9 +26,29 @@ use PhpTypesParser\PhpTypesParser;
 use function assert;
 use function is_array;
 
-class Parser
+/**
+ * @psalm-type ResolveSymbol callable(string): TypeInterface
+ */
+final class Parser
 {
-    public static function parse(string $typeString): TypeInterface
+    /** @var ResolveSymbol */
+    private $resolveSymbol;
+
+    private function __construct()
+    {
+        $this->resolveSymbol = static fn(string $symbol): TypeInterface => SimpleType::create($symbol);
+    }
+
+    public static function create(?Scope $scope = null): self
+    {
+        $parser = new self();
+        if ($scope !== null) {
+            $parser->resolveSymbol = static fn(string $symbol): TypeInterface => $scope->resolve($symbol);
+        }
+        return $parser;
+    }
+
+    public function parse(string $typeString): TypeInterface
     {
         $parser = new PhpTypesParser(
             new CommonTokenStream(
@@ -37,51 +57,51 @@ class Parser
                 )
             )
         );
-        return self::fromTypeExpr($parser->typeExpr());
+        return $this->fromTypeExpr($parser->typeExpr());
     }
 
-    private static function fromTypeExpr(TypeExprContext $context): TypeInterface
+    private function fromTypeExpr(TypeExprContext $context): TypeInterface
     {
         if ($context instanceof SimpleExprContext) {
-            return SimpleType::create($context->getText());
+            return ($this->resolveSymbol)($context->getText());
         }
         if ($context instanceof GenericExprContext) {
             $generic = $context->generic();
             assert($generic !== null);
-            return self::fromGeneric($generic);
+            return $this->fromGeneric($generic);
         }
         if ($context instanceof CurlyArrayExprContext) {
             $curlyArray = $context->curlyArray();
             assert($curlyArray !== null);
-            return self::fromCurlyArray($curlyArray);
+            return $this->fromCurlyArray($curlyArray);
         }
         if ($context instanceof CallableExprContext) {
             $callableType = $context->callableType();
             assert($callableType !== null);
-            return self::fromCallable($callableType);
+            return $this->fromCallable($callableType);
         }
         if ($context instanceof UnionContext) {
-            return self::fromUnion($context);
+            return $this->fromUnion($context);
         }
         if ($context instanceof StringLiteralExprContext) {
             $stringLiteral = $context->stringLiteral();
             assert($stringLiteral !== null);
-            return self::fromStringLiteral($stringLiteral);
+            return $this->fromStringLiteral($stringLiteral);
         }
         if ($context instanceof IntLiteralExprContext) {
             return new IntLiteralType((int)$context->getText());
         }
         assert($context instanceof IntersectionContext);
-        return self::fromIntersection($context);
+        return $this->fromIntersection($context);
     }
 
-    private static function fromGeneric(GenericContext $generic): TypeInterface
+    private function fromGeneric(GenericContext $generic): TypeInterface
     {
         $typeArguments = [];
         $typeExpr = $generic->typeExpr();
         assert(is_array($typeExpr));
         foreach ($typeExpr as $type) {
-            $typeArguments[] = self::fromTypeExpr($type);
+            $typeArguments[] = $this->fromTypeExpr($type);
         }
         $identifier = $generic->Identifier();
         assert($identifier !== null);
@@ -90,7 +110,7 @@ class Parser
         return SimpleType::generic($typeName, $typeArguments);
     }
 
-    private static function fromCurlyArray(CurlyArrayContext $context): TypeInterface
+    private function fromCurlyArray(CurlyArrayContext $context): TypeInterface
     {
         $entries = $context->curlyArrayEntry();
         assert(is_array($entries));
@@ -102,7 +122,7 @@ class Parser
             foreach ($entries as $entry) {
                 $entryType = $entry->typeExpr();
                 assert($entryType !== null);
-                $items[] = self::fromTypeExpr($entryType);
+                $items[] = $this->fromTypeExpr($entryType);
             }
             return new TupleType($items);
         }
@@ -117,14 +137,14 @@ class Parser
             $entryType = $entry->typeExpr();
             assert($entryType !== null);
             $fields[$fieldName] = [
-                'type' => self::fromTypeExpr($entryType),
+                'type' => $this->fromTypeExpr($entryType),
                 'optional' => $entry->optional !== null,
             ];
         }
         return StructType::create($fields);
     }
 
-    private static function fromCallable(CallableTypeContext $callable): CallableType
+    private function fromCallable(CallableTypeContext $callable): CallableType
     {
         $arguments = [];
         $argumentList = $callable->argumentList();
@@ -132,7 +152,7 @@ class Parser
             /** @var list<TypeExprContext> $typeExpr */
             $typeExpr = $argumentList->typeExpr();
             foreach ($typeExpr as $type) {
-                $arguments[] = self::fromTypeExpr($type);
+                $arguments[] = $this->fromTypeExpr($type);
             }
         }
         $returnType = $callable->returnType();
@@ -140,34 +160,34 @@ class Parser
         if ($returnType !== null) {
             $typeExpr = $returnType->typeExpr();
             assert($typeExpr !== null);
-            $return = self::fromTypeExpr($typeExpr);
+            $return = $this->fromTypeExpr($typeExpr);
         }
         return new CallableType($arguments, $return);
     }
 
-    private static function fromUnion(UnionContext $context): UnionType
+    private function fromUnion(UnionContext $context): UnionType
     {
         $alternatives = [];
         /** @var list<TypeExprContext> $typeExpr */
         $typeExpr = $context->typeExpr();
         foreach ($typeExpr as $type) {
-            $alternatives[] = self::parse($type->getText());
+            $alternatives[] = $this->parse($type->getText());
         }
         return UnionType::create($alternatives);
     }
 
-    private static function fromIntersection(IntersectionContext $context): IntersectionType
+    private function fromIntersection(IntersectionContext $context): IntersectionType
     {
         $types = [];
         /** @var list<TypeExprContext> $typeExpr */
         $typeExpr = $context->typeExpr();
         foreach ($typeExpr as $type) {
-            $types[] = self::parse($type->getText());
+            $types[] = $this->parse($type->getText());
         }
         return IntersectionType::create($types);
     }
 
-    private static function fromStringLiteral(StringLiteralContext $stringLiteral): StringLiteralType
+    private function fromStringLiteral(StringLiteralContext $stringLiteral): StringLiteralType
     {
         $identifier = $stringLiteral->Identifier();
         assert($identifier !== null);
