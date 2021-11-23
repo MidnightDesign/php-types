@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpTypes\Test\Functional;
 
-use PhpTypes\Parser;
+use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
 use function sprintf;
@@ -21,6 +21,10 @@ class TypeCompatibilityTest extends TestCase
         ['int', 'mixed'],
         ['float', 'mixed'],
         ['bool', 'mixed'],
+        ['true', 'bool'],
+        ['false', 'bool'],
+        ['true', 'true'],
+        ['false', 'false'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -71,6 +75,10 @@ class TypeCompatibilityTest extends TestCase
         ['string', 'int'],
         ['mixed', 'bool'],
         ['string|int', 'int'],
+        ['false', 'true'],
+        ['bool', 'true'],
+        ['true', 'false'],
+        ['bool', 'false'],
         // Union
         ['string|int|bool', 'int|string'],
         ['string|int', 'string|float'],
@@ -105,8 +113,9 @@ class TypeCompatibilityTest extends TestCase
      */
     public function testCompatibleTypes(string $subtype, string $supertype): void
     {
+        $scope = Scope::new();
         self::assertTrue(
-            Parser::parse($supertype)->isSupertypeOf(Parser::parse($subtype)),
+            $scope->parse($supertype)->isSupertypeOf($scope->parse($subtype)),
             \Safe\sprintf('Failed asserting that %s is a subtype of %s.', $subtype, $supertype)
         );
     }
@@ -126,8 +135,9 @@ class TypeCompatibilityTest extends TestCase
      */
     public function testIncompatibleTypes(string $subtype, string $supertype): void
     {
+        $scope = Scope::new();
         self::assertFalse(
-            Parser::parse($supertype)->isSupertypeOf(Parser::parse($subtype)),
+            $scope->parse($supertype)->isSupertypeOf($scope->parse($subtype)),
             \Safe\sprintf('Expected %s to not be a subtype of %s, but it actually is.', $subtype, $supertype)
         );
     }
