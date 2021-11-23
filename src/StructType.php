@@ -6,6 +6,9 @@ namespace PhpTypes;
 
 use function implode;
 
+/**
+ * @psalm-immutable
+ */
 class StructType implements TypeInterface
 {
     /**

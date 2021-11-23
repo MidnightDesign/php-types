@@ -6,6 +6,9 @@ namespace PhpTypes;
 
 use function implode;
 
+/**
+ * @psalm-immutable
+ */
 final class UnionType implements TypeInterface
 {
     /**

@@ -7,6 +7,9 @@ namespace PhpTypes;
 use function implode;
 use function sprintf;
 
+/**
+ * @psalm-immutable
+ */
 class CallableType implements TypeInterface
 {
     /**
@@ -41,8 +44,8 @@ class CallableType implements TypeInterface
         if ($this->returnType instanceof SimpleType && $this->returnType->isVoid()) {
             return true;
         }
-        $thisReturnType = $this->returnType ?? SimpleType::mixed();
-        $otherReturnType = $other->returnType ?? SimpleType::mixed();
+        $thisReturnType = $this->returnType ?? MixedType::instance();
+        $otherReturnType = $other->returnType ?? MixedType::instance();
         return $thisReturnType->isSupertypeOf($otherReturnType);
     }
 }

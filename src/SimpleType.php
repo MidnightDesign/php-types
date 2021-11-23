@@ -8,6 +8,9 @@ use function count;
 use function implode;
 use function sprintf;
 
+/**
+ * @psalm-immutable
+ */
 final class SimpleType implements TypeInterface
 {
     /** @var list<TypeInterface> */
@@ -19,13 +22,12 @@ final class SimpleType implements TypeInterface
 
     public static function create(string $name): TypeInterface
     {
-        if ($name === 'string') {
-            return StringType::instance();
-        }
-        if ($name === 'int') {
-            return IntType::instance();
-        }
-        return new self($name);
+        return match ($name) {
+            'string' => StringType::instance(),
+            'int' => IntType::instance(),
+            'mixed' => MixedType::instance(),
+            default => new self($name),
+        };
     }
 
     /**
@@ -36,11 +38,6 @@ final class SimpleType implements TypeInterface
         $instance = new self($t);
         $instance->typeArguments = $typeArguments;
         return $instance;
-    }
-
-    public static function mixed(): TypeInterface
-    {
-        return self::create('mixed');
     }
 
     public function __toString(): string
@@ -54,9 +51,6 @@ final class SimpleType implements TypeInterface
 
     public function isSupertypeOf(TypeInterface $other): bool
     {
-        if ($this->name === 'mixed') {
-            return true;
-        }
         if (!$other instanceof self) {
             return false;
         }

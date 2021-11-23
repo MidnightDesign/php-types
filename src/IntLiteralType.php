@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PhpTypes;
 
+/**
+ * @psalm-immutable
+ */
 final class IntLiteralType implements TypeInterface
 {
     public function __construct(private int $int)

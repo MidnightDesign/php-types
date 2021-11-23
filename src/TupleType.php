@@ -7,6 +7,9 @@ namespace PhpTypes;
 use function implode;
 use function sprintf;
 
+/**
+ * @psalm-immutable
+ */
 class TupleType implements TypeInterface
 {
     /**

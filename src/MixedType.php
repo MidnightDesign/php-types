@@ -7,25 +7,26 @@ namespace PhpTypes;
 /**
  * @psalm-immutable
  */
-final class IntType implements TypeInterface
+final class MixedType implements TypeInterface
 {
     private static self|null $instance = null;
 
+    /**
+     * @psalm-pure
+     */
     public static function instance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        /** @psalm-suppress ImpureStaticProperty */
+        return self::$instance ??= new self();
     }
 
     public function __toString(): string
     {
-        return 'int';
+        return 'mixed';
     }
 
     public function isSupertypeOf(TypeInterface $other): bool
     {
-        return $other instanceof self || $other instanceof IntLiteralType;
+        return true;
     }
 }

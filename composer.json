@@ -31,7 +31,7 @@
         "eventjet/coding-standard": "^3.7",
         "vimeo/psalm": "^4.10",
         "psalm/plugin-phpunit": "^0.16.1",
-        "phpstan/phpstan": "^0.12.99"
+        "phpstan/phpstan": "^1.2"
     },
     "scripts": {
         "check": [
