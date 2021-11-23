@@ -26,9 +26,15 @@ use PhpTypesParser\PhpTypesParser;
 use function assert;
 use function is_array;
 
+/**
+ * @phpstan-type Resolve callable(string): TypeInterface
+ */
 class Parser
 {
-    public static function parse(string $typeString): TypeInterface
+    /**
+     * @param Resolve $resolve
+     */
+    public static function parse(string $typeString, callable $resolve): TypeInterface
     {
         $parser = new PhpTypesParser(
             new CommonTokenStream(
@@ -37,31 +43,34 @@ class Parser
                 )
             )
         );
-        return self::fromTypeExpr($parser->typeExpr());
+        return self::fromTypeExpr($parser->typeExpr(), $resolve);
     }
 
-    private static function fromTypeExpr(TypeExprContext $context): TypeInterface
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromTypeExpr(TypeExprContext $context, callable $resolve): TypeInterface
     {
         if ($context instanceof SimpleExprContext) {
-            return SimpleType::create($context->getText());
+            return $resolve($context->getText());
         }
         if ($context instanceof GenericExprContext) {
             $generic = $context->generic();
             assert($generic !== null);
-            return self::fromGeneric($generic);
+            return self::fromGeneric($generic, $resolve);
         }
         if ($context instanceof CurlyArrayExprContext) {
             $curlyArray = $context->curlyArray();
             assert($curlyArray !== null);
-            return self::fromCurlyArray($curlyArray);
+            return self::fromCurlyArray($curlyArray, $resolve);
         }
         if ($context instanceof CallableExprContext) {
             $callableType = $context->callableType();
             assert($callableType !== null);
-            return self::fromCallable($callableType);
+            return self::fromCallable($callableType, $resolve);
         }
         if ($context instanceof UnionContext) {
-            return self::fromUnion($context);
+            return self::fromUnion($context, $resolve);
         }
         if ($context instanceof StringLiteralExprContext) {
             $stringLiteral = $context->stringLiteral();
@@ -72,16 +81,19 @@ class Parser
             return new IntLiteralType((int)$context->getText());
         }
         assert($context instanceof IntersectionContext);
-        return self::fromIntersection($context);
+        return self::fromIntersection($context, $resolve);
     }
 
-    private static function fromGeneric(GenericContext $generic): TypeInterface
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromGeneric(GenericContext $generic, callable $resolve): TypeInterface
     {
         $typeArguments = [];
         $typeExpr = $generic->typeExpr();
         assert(is_array($typeExpr));
         foreach ($typeExpr as $type) {
-            $typeArguments[] = self::fromTypeExpr($type);
+            $typeArguments[] = self::fromTypeExpr($type, $resolve);
         }
         $identifier = $generic->Identifier();
         assert($identifier !== null);
@@ -90,7 +102,10 @@ class Parser
         return SimpleType::generic($typeName, $typeArguments);
     }
 
-    private static function fromCurlyArray(CurlyArrayContext $context): TypeInterface
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromCurlyArray(CurlyArrayContext $context, callable $resolve): TypeInterface
     {
         $entries = $context->curlyArrayEntry();
         assert(is_array($entries));
@@ -102,7 +117,7 @@ class Parser
             foreach ($entries as $entry) {
                 $entryType = $entry->typeExpr();
                 assert($entryType !== null);
-                $items[] = self::fromTypeExpr($entryType);
+                $items[] = self::fromTypeExpr($entryType, $resolve);
             }
             return new TupleType($items);
         }
@@ -117,14 +132,17 @@ class Parser
             $entryType = $entry->typeExpr();
             assert($entryType !== null);
             $fields[$fieldName] = [
-                'type' => self::fromTypeExpr($entryType),
+                'type' => self::fromTypeExpr($entryType, $resolve),
                 'optional' => $entry->optional !== null,
             ];
         }
         return StructType::create($fields);
     }
 
-    private static function fromCallable(CallableTypeContext $callable): CallableType
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromCallable(CallableTypeContext $callable, callable $resolve): CallableType
     {
         $arguments = [];
         $argumentList = $callable->argumentList();
@@ -132,7 +150,7 @@ class Parser
             /** @var list<TypeExprContext> $typeExpr */
             $typeExpr = $argumentList->typeExpr();
             foreach ($typeExpr as $type) {
-                $arguments[] = self::fromTypeExpr($type);
+                $arguments[] = self::fromTypeExpr($type, $resolve);
             }
         }
         $returnType = $callable->returnType();
@@ -140,29 +158,35 @@ class Parser
         if ($returnType !== null) {
             $typeExpr = $returnType->typeExpr();
             assert($typeExpr !== null);
-            $return = self::fromTypeExpr($typeExpr);
+            $return = self::fromTypeExpr($typeExpr, $resolve);
         }
         return new CallableType($arguments, $return);
     }
 
-    private static function fromUnion(UnionContext $context): UnionType
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromUnion(UnionContext $context, callable $resolve): UnionType
     {
         $alternatives = [];
         /** @var list<TypeExprContext> $typeExpr */
         $typeExpr = $context->typeExpr();
         foreach ($typeExpr as $type) {
-            $alternatives[] = self::parse($type->getText());
+            $alternatives[] = self::parse($type->getText(), $resolve);
         }
         return UnionType::create($alternatives);
     }
 
-    private static function fromIntersection(IntersectionContext $context): IntersectionType
+    /**
+     * @param Resolve $resolve
+     */
+    private static function fromIntersection(IntersectionContext $context, callable $resolve): IntersectionType
     {
         $types = [];
         /** @var list<TypeExprContext> $typeExpr */
         $typeExpr = $context->typeExpr();
         foreach ($typeExpr as $type) {
-            $types[] = self::parse($type->getText());
+            $types[] = self::parse($type->getText(), $resolve);
         }
         return IntersectionType::create($types);
     }

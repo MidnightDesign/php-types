@@ -20,16 +20,6 @@ final class SimpleType implements TypeInterface
     {
     }
 
-    public static function create(string $name): TypeInterface
-    {
-        return match ($name) {
-            'string' => StringType::instance(),
-            'int' => IntType::instance(),
-            'mixed' => MixedType::instance(),
-            default => new self($name),
-        };
-    }
-
     /**
      * @param list<TypeInterface> $typeArguments
      */
