@@ -12,18 +12,18 @@ use function sprintf;
  */
 class CallableType implements TypeInterface
 {
+    private TypeInterface $returnType;
+
     /**
      * @param list<TypeInterface> $arguments
      */
-    public function __construct(private array $arguments, private ?TypeInterface $returnType = null)
+    public function __construct(private array $arguments, ?TypeInterface $returnType = null)
     {
+        $this->returnType = $returnType ?? MixedType::instance();
     }
 
     public function __toString(): string
     {
-        if ($this->returnType === null) {
-            return sprintf('callable(%s)', implode(', ', $this->arguments));
-        }
         return sprintf('callable(%s): %s', implode(', ', $this->arguments), (string)$this->returnType);
     }
 
@@ -41,11 +41,11 @@ class CallableType implements TypeInterface
                 return false;
             }
         }
-        if ($this->returnType instanceof SimpleType && $this->returnType->isVoid()) {
+        if ($this->returnType instanceof VoidType) {
             return true;
         }
-        $thisReturnType = $this->returnType ?? MixedType::instance();
-        $otherReturnType = $other->returnType ?? MixedType::instance();
+        $thisReturnType = $this->returnType;
+        $otherReturnType = $other->returnType;
         return $thisReturnType->isSupertypeOf($otherReturnType);
     }
 }

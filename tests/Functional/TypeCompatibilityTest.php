@@ -23,6 +23,8 @@ class TypeCompatibilityTest extends TestCase
         ['bool', 'mixed'],
         ['true', 'bool'],
         ['false', 'bool'],
+        ['true', 'true'],
+        ['false', 'false'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -73,6 +75,10 @@ class TypeCompatibilityTest extends TestCase
         ['string', 'int'],
         ['mixed', 'bool'],
         ['string|int', 'int'],
+        ['false', 'true'],
+        ['bool', 'true'],
+        ['true', 'false'],
+        ['bool', 'false'],
         // Union
         ['string|int|bool', 'int|string'],
         ['string|int', 'string|float'],
