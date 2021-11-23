@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PhpTypes;
 
+/**
+ * @psalm-immutable
+ */
 final class StringType implements TypeInterface
 {
     private static self|null $instance = null;
