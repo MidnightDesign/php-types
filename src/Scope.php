@@ -38,6 +38,8 @@ final class Scope
             self::$global->register('true', BoolValueType::true());
             self::$global->register('false', BoolValueType::false());
             self::$global->register('callable', new CallableType([]));
+            self::$global->register('object', ObjectType::instance());
+            self::$global->register('null', NullType::instance());
         }
         return self::$global;
     }

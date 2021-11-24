@@ -25,6 +25,8 @@ class TypeCompatibilityTest extends TestCase
         ['false', 'bool'],
         ['true', 'true'],
         ['false', 'false'],
+        ['object', 'mixed'],
+        ['object', 'object'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -32,6 +34,8 @@ class TypeCompatibilityTest extends TestCase
         ['int', 'string|mixed'],
         ['string|int', 'string|int|bool'],
         ['string|int', 'bool|int|string'],
+        ['string', 'string|null'],
+        ['null', 'string|null'],
         // Callables
         ['callable(string): void', 'callable(string|int): void'],
         ['callable(): string', 'callable(): string|int'],
@@ -79,6 +83,7 @@ class TypeCompatibilityTest extends TestCase
         ['bool', 'true'],
         ['true', 'false'],
         ['bool', 'false'],
+        ['mixed', 'object'],
         // Union
         ['string|int|bool', 'int|string'],
         ['string|int', 'string|float'],
