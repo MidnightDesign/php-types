@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace PhpTypes;
 
+use InvalidArgumentException;
+
 use function implode;
-use function sprintf;
 
 /**
  * @psalm-immutable
@@ -19,12 +20,18 @@ class CallableType implements TypeInterface
      */
     public function __construct(private array $arguments, ?TypeInterface $returnType = null)
     {
+        foreach ($this->arguments as $argument) {
+            if (!$argument instanceof VoidType) {
+                continue;
+            }
+            throw new InvalidArgumentException('Can\'t use void as a parameter type');
+        }
         $this->returnType = $returnType ?? MixedType::instance();
     }
 
     public function __toString(): string
     {
-        return sprintf('callable(%s): %s', implode(', ', $this->arguments), (string)$this->returnType);
+        return 'callable(' . implode(', ', $this->arguments) . '): ' . $this->returnType;
     }
 
     public function isSupertypeOf(TypeInterface $other): bool
@@ -40,9 +47,6 @@ class CallableType implements TypeInterface
             if (!$argument->isSupertypeOf($otherArgument)) {
                 return false;
             }
-        }
-        if ($this->returnType instanceof VoidType) {
-            return true;
         }
         $thisReturnType = $this->returnType;
         $otherReturnType = $other->returnType;

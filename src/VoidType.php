@@ -26,6 +26,6 @@ final class VoidType implements TypeInterface
 
     public function isSupertypeOf(TypeInterface $other): bool
     {
-        return $other instanceof self;
+        return true;
     }
 }

@@ -8,7 +8,6 @@ use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
 use function is_int;
-use function sprintf;
 
 final class ParseAndToStringRoundtripTest extends TestCase
 {
@@ -54,6 +53,8 @@ final class ParseAndToStringRoundtripTest extends TestCase
         '-1',
         '-23',
         '99999999',
+        // Aliases
+        'array-key' => 'string|int',
     ];
 
     /**
@@ -75,7 +76,7 @@ final class ParseAndToStringRoundtripTest extends TestCase
             if (is_int($from)) {
                 $from = $expected;
             }
-            yield sprintf('%s -> %s', $from, $expected) => [$from, $expected];
+            yield \Safe\sprintf('%s -> %s', $from, $expected) => [$from, $expected];
         }
     }
 }

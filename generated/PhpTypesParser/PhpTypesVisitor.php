@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from C:/Users/rgott/Projects/antlr.php-types-parser-for-php\PhpTypes.g4 by ANTLR 4.9.1
+ * Generated from C:/Users/rgott/Projects/php-types\PhpTypes.g4 by ANTLR 4.9.2
  */
 
 namespace PhpTypesParser;

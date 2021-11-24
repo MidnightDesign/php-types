@@ -20,6 +20,7 @@ final class UnionType implements TypeInterface
 
     /**
      * @param list<TypeInterface> $alternatives
+     * @psalm-pure
      */
     public static function create(array $alternatives): self
     {
@@ -52,5 +53,16 @@ final class UnionType implements TypeInterface
             return true;
         }
         return false;
+    }
+
+    public function allAreSubtypesOf(TypeInterface $supertype): bool
+    {
+        foreach ($this->alternatives as $alternative) {
+            if ($supertype->isSupertypeOf($alternative)) {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 }

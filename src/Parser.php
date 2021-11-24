@@ -6,6 +6,7 @@ namespace PhpTypes;
 
 use Antlr\Antlr4\Runtime\CommonTokenStream;
 use Antlr\Antlr4\Runtime\InputStream;
+use PhpTypes\Exception\ParseError;
 use PhpTypesParser\Context\CallableExprContext;
 use PhpTypesParser\Context\CallableTypeContext;
 use PhpTypesParser\Context\CurlyArrayContext;
@@ -22,28 +23,35 @@ use PhpTypesParser\Context\TypeExprContext;
 use PhpTypesParser\Context\UnionContext;
 use PhpTypesParser\PhpTypesLexer;
 use PhpTypesParser\PhpTypesParser;
+use Throwable;
 
 use function assert;
 use function is_array;
 
 /**
- * @phpstan-type Resolve callable(string): TypeInterface
+ * See https://github.com/vimeo/psalm/issues/6928#issuecomment-978144437
+ * @phpstan-type ListOfTypes list<TypeInterface>
+ * @phpstan-type Resolve callable(string, ListOfTypes=): TypeInterface
  */
-class Parser
+final class Parser
 {
     /**
      * @param Resolve $resolve
      */
     public static function parse(string $typeString, callable $resolve): TypeInterface
     {
-        $parser = new PhpTypesParser(
-            new CommonTokenStream(
-                new PhpTypesLexer(
-                    InputStream::fromString($typeString)
+        try {
+            $parser = new PhpTypesParser(
+                new CommonTokenStream(
+                    new PhpTypesLexer(
+                        InputStream::fromString($typeString)
+                    )
                 )
-            )
-        );
-        return self::fromTypeExpr($parser->typeExpr(), $resolve);
+            );
+            return self::fromTypeExpr($parser->typeExpr(), $resolve);
+        } catch (Throwable $error) {
+            throw new ParseError($error->getMessage(), 0, $error);
+        }
     }
 
     /**
@@ -99,7 +107,7 @@ class Parser
         assert($identifier !== null);
         $typeName = $identifier->getText();
         assert($typeName !== null);
-        return SimpleType::generic($typeName, $typeArguments);
+        return $resolve($typeName, $typeArguments);
     }
 
     /**

@@ -7,7 +7,7 @@ namespace PhpTypes;
 /**
  * @psalm-immutable
  */
-final class StringType implements TypeInterface
+final class NullType implements TypeInterface
 {
     private static self|null $instance = null;
 
@@ -21,14 +21,11 @@ final class StringType implements TypeInterface
 
     public function __toString(): string
     {
-        return 'string';
+        return 'null';
     }
 
     public function isSupertypeOf(TypeInterface $other): bool
     {
-        if ($other instanceof UnionType && $other->allAreSubtypesOf($this)) {
-            return true;
-        }
-        return $other instanceof self || $other instanceof StringLiteralType;
+        return $other instanceof self;
     }
 }
