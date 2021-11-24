@@ -11,12 +11,13 @@ final class IntType implements TypeInterface
 {
     private static self|null $instance = null;
 
+    /**
+     * @psalm-pure
+     */
     public static function instance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        /** @psalm-suppress ImpureStaticProperty */
+        return self::$instance ??= new self();
     }
 
     public function __toString(): string

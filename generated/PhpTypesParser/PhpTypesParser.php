@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from C:/Users/rgott/Projects/antlr.php-types-parser-for-php\PhpTypes.g4 by ANTLR 4.9.1
+ * Generated from C:/Users/rgott/Projects/php-types\PhpTypes.g4 by ANTLR 4.9.2
  */
 
 namespace PhpTypesParser {
@@ -164,7 +164,7 @@ namespace PhpTypesParser {
 				return;
 			}
 
-			RuntimeMetaData::checkVersion('4.9.1', RuntimeMetaData::VERSION);
+			RuntimeMetaData::checkVersion('4.9.2', RuntimeMetaData::VERSION);
 
 			$atn = (new ATNDeserializer())->deserialize(self::SERIALIZED_ATN);
 

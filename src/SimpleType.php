@@ -6,7 +6,6 @@ namespace PhpTypes;
 
 use function count;
 use function implode;
-use function sprintf;
 
 /**
  * @psalm-immutable
@@ -34,7 +33,7 @@ final class SimpleType implements TypeInterface
     {
         $typeArgs = '';
         if (count($this->typeArguments) !== 0) {
-            $typeArgs = sprintf('<%s>', implode(', ', $this->typeArguments));
+            $typeArgs = '<' . implode(', ', $this->typeArguments) . '>';
         }
         return $this->name . $typeArgs;
     }

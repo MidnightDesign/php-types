@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace PhpTypes;
 
 use function implode;
-use function sprintf;
 
 /**
  * @psalm-immutable
  */
-class TupleType implements TypeInterface
+class TupleType implements TypeInterface, KeyValueTypeInterface
 {
     /**
      * @param list<TypeInterface> $items
@@ -21,7 +20,7 @@ class TupleType implements TypeInterface
 
     public function __toString(): string
     {
-        return sprintf('array{%s}', implode(', ', $this->items));
+        return 'array{' . implode(', ', $this->items) . '}';
     }
 
     public function isSupertypeOf(TypeInterface $other): bool
@@ -40,5 +39,15 @@ class TupleType implements TypeInterface
             return false;
         }
         return true;
+    }
+
+    public function getKeyType(): TypeInterface
+    {
+        return IntType::instance();
+    }
+
+    public function getValueType(): TypeInterface
+    {
+        return UnionType::create($this->items);
     }
 }

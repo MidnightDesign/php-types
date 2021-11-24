@@ -12,6 +12,8 @@ final class Scope
     private static Scope|null $global = null;
     /** @var array<string, TypeInterface> */
     private array $types = [];
+    /** @var array<string, class-string<GenericTypeInterface>> */
+    private array $genericTypes = [];
     private ?Scope $parent = null;
 
     private function __construct()
@@ -40,13 +42,24 @@ final class Scope
             self::$global->register('callable', new CallableType([]));
             self::$global->register('object', ObjectType::instance());
             self::$global->register('null', NullType::instance());
+            self::$global->register('array-key', WellKnown::arrayKey());
+            self::$global->register('iterable', IterableType::class);
+            self::$global->register('list', ListType::class);
+            self::$global->register('array', ArrayType::class);
         }
         return self::$global;
     }
 
-    public function register(string $alias, TypeInterface $type): void
+    /**
+     * @param TypeInterface|class-string<GenericTypeInterface> $type
+     */
+    public function register(string $name, TypeInterface|string $type): void
     {
-        $this->types[$alias] = $type;
+        if ($type instanceof TypeInterface) {
+            $this->types[$name] = $type;
+        } else {
+            $this->genericTypes[$name] = $type;
+        }
     }
 
     public function parse(string $string): TypeInterface
@@ -54,13 +67,21 @@ final class Scope
         return Parser::parse($string, Closure::fromCallable([$this, 'resolve']));
     }
 
-    private function resolve(string $name): TypeInterface
+    /**
+     * @param list<TypeInterface> $typeParameters
+     */
+    private function resolve(string $name, ?array $typeParameters = null): TypeInterface
     {
-        if (isset($this->types[$name])) {
-            return $this->types[$name];
+        $type = $this->types[$name] ?? null;
+        if ($type !== null) {
+            return $type;
+        }
+        $genericType = $this->genericTypes[$name] ?? null;
+        if ($genericType !== null) {
+            return $genericType::withTypeParameters($typeParameters ?? []);
         }
         if ($this->parent !== null) {
-            return $this->parent->resolve($name);
+            return $this->parent->resolve($name, $typeParameters);
         }
         throw new Exception("Unknown type: $name");
     }

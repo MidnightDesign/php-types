@@ -7,8 +7,6 @@ namespace PhpTypes\Test\Functional;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
-use function sprintf;
-
 class TypeCompatibilityTest extends TestCase
 {
     private const COMPATIBLE_TYPES = [
@@ -27,6 +25,7 @@ class TypeCompatibilityTest extends TestCase
         ['false', 'false'],
         ['object', 'mixed'],
         ['object', 'object'],
+        ['array', 'iterable'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -73,6 +72,23 @@ class TypeCompatibilityTest extends TestCase
         ['-1', 'int'],
         ['-69', '-69'],
         ['-69', 'int'],
+        // Collections
+        ['list<int>', 'list<int>'],
+        ['list<string>', 'array<int, string>'],
+        ['array<string>', 'iterable<string>'],
+        ['array<array-key, string>', 'array<string>'],
+        ['array<array-key, mixed>', 'array'],
+        ['array<string, float>', 'array<float>'],
+        ['iterable<string>', 'iterable<string|int>'],
+        ['list<bool>', 'iterable<bool>'],
+        ['array{foo: string}', 'array<string, string>'],
+        ['array{foo: string, bar: string}', 'array<string, string>'],
+        ['array{foo: string, bar: int}', 'array<string, string|int>'],
+        ['array{"foo", "bar"}', 'list<string>'],
+        ['array{string, string}', 'list<string>'],
+        ['array{int, string}', 'list<string|int>'],
+        ['array{string, string}', 'array<int, string>'],
+        ['list<mixed>', 'list'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple
@@ -111,6 +127,10 @@ class TypeCompatibilityTest extends TestCase
         ['"foo"', '"bar"'],
         ['23', '27'],
         ['int', '27'],
+        // Collections
+        ['list<string>', 'array<string, string>'],
+        ['iterable', 'array'],
+        ['string', 'iterable'],
     ];
 
     /**
@@ -119,9 +139,13 @@ class TypeCompatibilityTest extends TestCase
     public function testCompatibleTypes(string $subtype, string $supertype): void
     {
         $scope = Scope::new();
+        $super = $scope->parse($supertype);
+        $sub = $scope->parse($subtype);
+        $displaySuper = (string)$super === $supertype ? $supertype : $supertype . ' (' . $super . ')';
+        $displaySub = (string)$sub === $subtype ? $subtype : $subtype . ' (' . $sub . ')';
         self::assertTrue(
-            $scope->parse($supertype)->isSupertypeOf($scope->parse($subtype)),
-            \Safe\sprintf('Failed asserting that %s is a subtype of %s.', $subtype, $supertype)
+            $super->isSupertypeOf($sub),
+            \Safe\sprintf('Failed asserting that %s is a subtype of %s.', $displaySub, $displaySuper)
         );
     }
 
@@ -131,7 +155,7 @@ class TypeCompatibilityTest extends TestCase
     public function compatibleTypes(): iterable
     {
         foreach (self::COMPATIBLE_TYPES as [$subtype, $supertype]) {
-            yield sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
+            yield \Safe\sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
         }
     }
 
@@ -153,7 +177,7 @@ class TypeCompatibilityTest extends TestCase
     public function incompatibleTypes(): iterable
     {
         foreach (self::INCOMPATIBLE_TYPES as [$subtype, $supertype]) {
-            yield sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
+            yield \Safe\sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
         }
     }
 }
