@@ -37,6 +37,10 @@ final class ClassType implements TypeInterface
             return false;
         }
 
+        if ($this->className === $other->className) {
+            return true;
+        }
+
         $otherParentClassNames = array_map(
             static fn(self $parentClass): string => $parentClass->className,
             $other->parentClasses
