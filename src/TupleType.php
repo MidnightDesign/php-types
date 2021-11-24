@@ -29,7 +29,8 @@ class TupleType implements TypeInterface, KeyValueTypeInterface
             return false;
         }
         foreach ($this->items as $index => $item) {
-            $otherItem = $other->items[$index] ?? null;
+            $otherItems = $other->items;
+            $otherItem = $otherItems[$index] ?? null;
             if ($otherItem === null) {
                 return false;
             }

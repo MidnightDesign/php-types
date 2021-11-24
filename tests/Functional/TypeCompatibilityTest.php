@@ -27,6 +27,7 @@ class TypeCompatibilityTest extends TestCase
         ['object', 'mixed'],
         ['object', 'object'],
         ['array', 'iterable'],
+        ['Foo', 'object'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -104,6 +105,7 @@ class TypeCompatibilityTest extends TestCase
         ['true', 'false'],
         ['bool', 'false'],
         ['mixed', 'object'],
+        ['string|int', 'string'],
         // Union
         ['string|int|bool', 'int|string'],
         ['string|int', 'string|float'],
@@ -135,6 +137,13 @@ class TypeCompatibilityTest extends TestCase
         ['list<string>', 'array<string, string>'],
         ['iterable', 'array'],
         ['string', 'iterable'],
+        ['iterable<int, string>', 'iterable<string, int>'],
+        ['float', 'array'],
+        ['iterable<string, float>', 'iterable<string, int>'],
+        ['iterable<bool, int>', 'iterable<string, int>'],
+        ['float', 'list'],
+        ['int', 'string|null'],
+        ['array{foo: int}', 'array<string, string>'],
         // Classes
         ['FooInterface', 'Foo'],
         ['Popo', 'FooInterface'],
