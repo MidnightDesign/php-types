@@ -50,7 +50,7 @@ final class Parser
             );
             return self::fromTypeExpr($parser->typeExpr(), $resolve);
         } catch (Throwable $error) {
-            throw new ParseError($error->getMessage(), $error->getCode(), $error);
+            throw new ParseError($error->getMessage(), 0, $error);
         }
     }
 
