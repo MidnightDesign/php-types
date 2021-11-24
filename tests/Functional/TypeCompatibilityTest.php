@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpTypes\Test\Functional;
 
+use PhpTypes\ClassType;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
@@ -89,6 +90,9 @@ class TypeCompatibilityTest extends TestCase
         ['array{int, string}', 'list<string|int>'],
         ['array{string, string}', 'array<int, string>'],
         ['list<mixed>', 'list'],
+        // Classes
+        ['Foo', 'Foo'],
+        ['Foo', 'FooInterface'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple
@@ -131,16 +135,21 @@ class TypeCompatibilityTest extends TestCase
         ['list<string>', 'array<string, string>'],
         ['iterable', 'array'],
         ['string', 'iterable'],
+        // Classes
+        ['FooInterface', 'Foo'],
+        ['Popo', 'FooInterface'],
+        ['string', 'Foo'],
     ];
+
+    private Scope $scope;
 
     /**
      * @dataProvider compatibleTypes
      */
     public function testCompatibleTypes(string $subtype, string $supertype): void
     {
-        $scope = Scope::new();
-        $super = $scope->parse($supertype);
-        $sub = $scope->parse($subtype);
+        $super = $this->scope->parse($supertype);
+        $sub = $this->scope->parse($subtype);
         $displaySuper = (string)$super === $supertype ? $supertype : $supertype . ' (' . $super . ')';
         $displaySub = (string)$sub === $subtype ? $subtype : $subtype . ' (' . $sub . ')';
         self::assertTrue(
@@ -164,9 +173,8 @@ class TypeCompatibilityTest extends TestCase
      */
     public function testIncompatibleTypes(string $subtype, string $supertype): void
     {
-        $scope = Scope::new();
         self::assertFalse(
-            $scope->parse($supertype)->isSupertypeOf($scope->parse($subtype)),
+            $this->scope->parse($supertype)->isSupertypeOf($this->scope->parse($subtype)),
             \Safe\sprintf('Expected %s to not be a subtype of %s, but it actually is.', $subtype, $supertype)
         );
     }
@@ -179,5 +187,16 @@ class TypeCompatibilityTest extends TestCase
         foreach (self::INCOMPATIBLE_TYPES as [$subtype, $supertype]) {
             yield \Safe\sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
         }
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->scope = Scope::new();
+        $fooInterface = new ClassType('FooInterface');
+        $this->scope->register('FooInterface', $fooInterface);
+        $this->scope->register('Foo', new ClassType('Foo', [$fooInterface]));
+        $this->scope->register('Popo', new ClassType('Popo'));
     }
 }
