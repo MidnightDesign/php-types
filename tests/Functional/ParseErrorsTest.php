@@ -38,7 +38,7 @@ final class ParseErrorsTest extends TestCase
             'Unknown type: strring',
         ];
         yield 'Void in parameter position' => [
-            'callable(void): void',
+            'callable(string, void): void',
             'Can\'t use void as a parameter type',
         ];
     }

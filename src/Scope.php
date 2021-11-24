@@ -30,22 +30,23 @@ final class Scope
     private static function global(): self
     {
         if (self::$global === null) {
-            self::$global = new self();
-            self::$global->register('mixed', MixedType::instance());
-            self::$global->register('int', IntType::instance());
-            self::$global->register('string', StringType::instance());
-            self::$global->register('float', FloatType::instance());
-            self::$global->register('bool', BoolType::instance());
-            self::$global->register('void', VoidType::instance());
-            self::$global->register('true', BoolValueType::true());
-            self::$global->register('false', BoolValueType::false());
-            self::$global->register('callable', new CallableType([]));
-            self::$global->register('object', ObjectType::instance());
-            self::$global->register('null', NullType::instance());
-            self::$global->register('array-key', WellKnown::arrayKey());
-            self::$global->register('iterable', IterableType::class);
-            self::$global->register('list', ListType::class);
-            self::$global->register('array', ArrayType::class);
+            $global = new self();
+            $global->register('mixed', MixedType::instance());
+            $global->register('int', IntType::instance());
+            $global->register('string', StringType::instance());
+            $global->register('float', FloatType::instance());
+            $global->register('bool', BoolType::instance());
+            $global->register('void', VoidType::instance());
+            $global->register('true', BoolValueType::true());
+            $global->register('false', BoolValueType::false());
+            $global->register('callable', new CallableType([]));
+            $global->register('object', ObjectType::instance());
+            $global->register('null', NullType::instance());
+            $global->register('array-key', WellKnown::arrayKey());
+            $global->register('iterable', IterableType::class);
+            $global->register('list', ListType::class);
+            $global->register('array', ArrayType::class);
+            self::$global = $global;
         }
         return self::$global;
     }

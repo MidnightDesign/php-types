@@ -44,7 +44,8 @@ class StructType implements TypeInterface, KeyValueTypeInterface
             return false;
         }
         foreach ($this->fields as $key => $fieldDefinition) {
-            $otherDefinition = $other->fields[$key] ?? null;
+            $otherFields = $other->fields;
+            $otherDefinition = $otherFields[$key] ?? null;
             $thisOptional = $fieldDefinition['optional'];
             if ($otherDefinition === null) {
                 if ($thisOptional) {

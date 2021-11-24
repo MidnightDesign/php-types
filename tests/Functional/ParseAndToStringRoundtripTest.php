@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpTypes\Test\Functional;
 
+use PhpTypes\ClassType;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +26,7 @@ final class ParseAndToStringRoundtripTest extends TestCase
         'list<string>|list<int>',
         'list<string|int>',
         // Intersections
-//        'FooInterface&BarInterface',
+        'Foo&Bar',
         // Generics
         'list<string>',
         'array<string, bool>',
@@ -55,14 +56,25 @@ final class ParseAndToStringRoundtripTest extends TestCase
         '99999999',
         // Aliases
         'array-key' => 'string|int',
+        // Collections
+        'array' => 'array<string|int, mixed>',
+        'array<bool>' => 'array<string|int, bool>',
+        'array<string, int>' => 'array<string, int>',
+        'list' => 'list<mixed>',
+        'list<float>' => 'list<float>',
+        'iterable' => 'iterable<mixed, mixed>',
+        'iterable<string>' => 'iterable<mixed, string>',
+        'iterable<string, int>' => 'iterable<string, int>',
+        'Foo',
     ];
+    private Scope $scope;
 
     /**
      * @dataProvider cases
      */
     public function testRoundtrip(string $from, string $expected): void
     {
-        $actual = (string)Scope::new()->parse($from);
+        $actual = (string)$this->scope->parse($from);
 
         self::assertSame($expected, $actual);
     }
@@ -78,5 +90,14 @@ final class ParseAndToStringRoundtripTest extends TestCase
             }
             yield \Safe\sprintf('%s -> %s', $from, $expected) => [$from, $expected];
         }
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->scope = Scope::new();
+        $this->scope->register('Foo', new ClassType('Foo'));
+        $this->scope->register('Bar', new ClassType('Bar'));
     }
 }
