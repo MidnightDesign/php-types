@@ -117,26 +117,6 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitCallableType(Context\CallableTypeContext $context) : void;
 	/**
-	 * Enter a parse tree produced by {@see PhpTypesParser::argumentList()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterArgumentList(Context\ArgumentListContext $context) : void;
-	/**
-	 * Exit a parse tree produced by {@see PhpTypesParser::argumentList()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitArgumentList(Context\ArgumentListContext $context) : void;
-	/**
-	 * Enter a parse tree produced by {@see PhpTypesParser::returnType()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterReturnType(Context\ReturnTypeContext $context) : void;
-	/**
-	 * Exit a parse tree produced by {@see PhpTypesParser::returnType()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitReturnType(Context\ReturnTypeContext $context) : void;
-	/**
 	 * Enter a parse tree produced by {@see PhpTypesParser::curlyArray()}.
 	 * @param $context The parse tree.
 	 */

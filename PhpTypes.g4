@@ -15,15 +15,7 @@ typeList
     ;
 
 callableType
-    : 'callable' OpenParen argumentList? CloseParen (Colon returnType)?
-    ;
-
-argumentList
-    : typeExpr (Comma typeExpr)*
-    ;
-
-returnType
-    : typeExpr
+    : 'callable' OpenParen typeList? CloseParen (Colon typeExpr)?
     ;
 
 curlyArray

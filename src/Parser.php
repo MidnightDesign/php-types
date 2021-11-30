@@ -150,7 +150,7 @@ final class Parser
     private static function fromCallable(CallableTypeContext $callable, callable $resolve): CallableType
     {
         $arguments = [];
-        $argumentList = $callable->argumentList();
+        $argumentList = $callable->typeList();
         if ($argumentList !== null) {
             /** @var list<TypeExprContext> $typeExpr */
             $typeExpr = $argumentList->typeExpr();
@@ -158,12 +158,10 @@ final class Parser
                 $arguments[] = self::fromTypeExpr($type, $resolve);
             }
         }
-        $returnType = $callable->returnType();
+        $returnType = $callable->typeExpr();
         $return = null;
         if ($returnType !== null) {
-            $typeExpr = $returnType->typeExpr();
-            assert($typeExpr !== null);
-            $return = self::fromTypeExpr($typeExpr, $resolve);
+            $return = self::fromTypeExpr($returnType, $resolve);
         }
         return new CallableType($arguments, $return);
     }

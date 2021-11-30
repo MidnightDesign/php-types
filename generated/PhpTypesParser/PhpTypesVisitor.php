@@ -102,24 +102,6 @@ interface PhpTypesVisitor extends ParseTreeVisitor
 	public function visitCallableType(Context\CallableTypeContext $context);
 
 	/**
-	 * Visit a parse tree produced by {@see PhpTypesParser::argumentList()}.
-	 *
-	 * @param Context\ArgumentListContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitArgumentList(Context\ArgumentListContext $context);
-
-	/**
-	 * Visit a parse tree produced by {@see PhpTypesParser::returnType()}.
-	 *
-	 * @param Context\ReturnTypeContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitReturnType(Context\ReturnTypeContext $context);
-
-	/**
 	 * Visit a parse tree produced by {@see PhpTypesParser::curlyArray()}.
 	 *
 	 * @param Context\CurlyArrayContext $context The parse tree.

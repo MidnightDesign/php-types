@@ -139,32 +139,6 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterArgumentList(Context\ArgumentListContext $context) : void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitArgumentList(Context\ArgumentListContext $context) : void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterReturnType(Context\ReturnTypeContext $context) : void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitReturnType(Context\ReturnTypeContext $context) : void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
 	public function enterCurlyArray(Context\CurlyArrayContext $context) : void {}
 
 	/**
