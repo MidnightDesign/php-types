@@ -73,6 +73,18 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitCurlyArrayExpr(Context\CurlyArrayExprContext $context) : void;
 	/**
+	 * Enter a parse tree produced by the `ParenExpr`
+	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterParenExpr(Context\ParenExprContext $context) : void;
+	/**
+	 * Exit a parse tree produced by the `ParenExpr` labeled alternative
+	 * in {@see PhpTypesParser::typeExpr()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitParenExpr(Context\ParenExprContext $context) : void;
+	/**
 	 * Enter a parse tree produced by the `CallableExpr`
 	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
 	 * @param $context The parse tree.

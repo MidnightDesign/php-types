@@ -20,6 +20,8 @@ final class ParseAndToStringRoundtripTest extends TestCase
         'bool',
         'true',
         'false',
+        '(int)' => 'int',
+        '((int))' => 'int',
         // Unions
         'string|int',
         'string|int|float',

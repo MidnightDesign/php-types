@@ -14,6 +14,7 @@ use PhpTypesParser\Context\CurlyArrayEntryContext;
 use PhpTypesParser\Context\CurlyArrayExprContext;
 use PhpTypesParser\Context\IntersectionContext;
 use PhpTypesParser\Context\IntLiteralExprContext;
+use PhpTypesParser\Context\ParenExprContext;
 use PhpTypesParser\Context\SimpleExprContext;
 use PhpTypesParser\Context\StringLiteralContext;
 use PhpTypesParser\Context\StringLiteralExprContext;
@@ -57,6 +58,11 @@ final class Parser
      */
     private static function fromTypeExpr(TypeExprContext $context, callable $resolve): TypeInterface
     {
+        if ($context instanceof ParenExprContext) {
+            $parenContents = $context->typeExpr();
+            assert($parenContents !== null);
+            return self::fromTypeExpr($parenContents, $resolve);
+        }
         if ($context instanceof SimpleExprContext) {
             return self::fromGeneric($context, $resolve);
         }

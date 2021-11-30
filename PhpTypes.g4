@@ -1,7 +1,8 @@
 grammar PhpTypes;
 
 typeExpr
-    : Identifier (LT typeList GT)?            #SimpleExpr
+    : OpenParen typeExpr CloseParen           #ParenExpr
+    | Identifier (LT typeList GT)?            #SimpleExpr
     | callableType                            #CallableExpr
     | curlyArray                              #CurlyArrayExpr
     | stringLiteral                           #StringLiteralExpr
