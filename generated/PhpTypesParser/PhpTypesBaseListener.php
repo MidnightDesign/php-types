@@ -48,19 +48,6 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterGenericExpr(Context\GenericExprContext $context) : void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitGenericExpr(Context\GenericExprContext $context) : void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
 	public function enterIntLiteralExpr(Context\IntLiteralExprContext $context) : void {}
 
 	/**
@@ -126,14 +113,14 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function enterGeneric(Context\GenericContext $context) : void {}
+	public function enterTypeList(Context\TypeListContext $context) : void {}
 
 	/**
 	 * {@inheritdoc}
 	 *
 	 * The default implementation does nothing.
 	 */
-	public function exitGeneric(Context\GenericContext $context) : void {}
+	public function exitTypeList(Context\TypeListContext $context) : void {}
 	/**
 	 * {@inheritdoc}
 	 *
@@ -147,32 +134,6 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 * The default implementation does nothing.
 	 */
 	public function exitCallableType(Context\CallableTypeContext $context) : void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterArgumentList(Context\ArgumentListContext $context) : void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitArgumentList(Context\ArgumentListContext $context) : void {}
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function enterReturnType(Context\ReturnTypeContext $context) : void {}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation does nothing.
-	 */
-	public function exitReturnType(Context\ReturnTypeContext $context) : void {}
 	/**
 	 * {@inheritdoc}
 	 *

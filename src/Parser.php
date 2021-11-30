@@ -12,8 +12,6 @@ use PhpTypesParser\Context\CallableTypeContext;
 use PhpTypesParser\Context\CurlyArrayContext;
 use PhpTypesParser\Context\CurlyArrayEntryContext;
 use PhpTypesParser\Context\CurlyArrayExprContext;
-use PhpTypesParser\Context\GenericContext;
-use PhpTypesParser\Context\GenericExprContext;
 use PhpTypesParser\Context\IntersectionContext;
 use PhpTypesParser\Context\IntLiteralExprContext;
 use PhpTypesParser\Context\SimpleExprContext;
@@ -60,12 +58,7 @@ final class Parser
     private static function fromTypeExpr(TypeExprContext $context, callable $resolve): TypeInterface
     {
         if ($context instanceof SimpleExprContext) {
-            return $resolve($context->getText());
-        }
-        if ($context instanceof GenericExprContext) {
-            $generic = $context->generic();
-            assert($generic !== null);
-            return self::fromGeneric($generic, $resolve);
+            return self::fromGeneric($context, $resolve);
         }
         if ($context instanceof CurlyArrayExprContext) {
             $curlyArray = $context->curlyArray();
@@ -95,15 +88,19 @@ final class Parser
     /**
      * @param Resolve $resolve
      */
-    private static function fromGeneric(GenericContext $generic, callable $resolve): TypeInterface
+    private static function fromGeneric(SimpleExprContext $context, callable $resolve): TypeInterface
     {
+        $typeList = $context->typeList();
+        if ($typeList === null) {
+            return $resolve($context->getText());
+        }
         $typeArguments = [];
-        $typeExpr = $generic->typeExpr();
+        $typeExpr = $typeList->typeExpr();
         assert(is_array($typeExpr));
         foreach ($typeExpr as $type) {
             $typeArguments[] = self::fromTypeExpr($type, $resolve);
         }
-        $identifier = $generic->Identifier();
+        $identifier = $context->Identifier();
         assert($identifier !== null);
         $typeName = $identifier->getText();
         assert($typeName !== null);
@@ -153,7 +150,7 @@ final class Parser
     private static function fromCallable(CallableTypeContext $callable, callable $resolve): CallableType
     {
         $arguments = [];
-        $argumentList = $callable->argumentList();
+        $argumentList = $callable->typeList();
         if ($argumentList !== null) {
             /** @var list<TypeExprContext> $typeExpr */
             $typeExpr = $argumentList->typeExpr();
@@ -161,12 +158,10 @@ final class Parser
                 $arguments[] = self::fromTypeExpr($type, $resolve);
             }
         }
-        $returnType = $callable->returnType();
+        $returnType = $callable->typeExpr();
         $return = null;
         if ($returnType !== null) {
-            $typeExpr = $returnType->typeExpr();
-            assert($typeExpr !== null);
-            $return = self::fromTypeExpr($typeExpr, $resolve);
+            $return = self::fromTypeExpr($returnType, $resolve);
         }
         return new CallableType($arguments, $return);
     }

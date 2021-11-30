@@ -41,6 +41,9 @@ class TypeCompatibilityTest extends TestCase
         ['callable(string): void', 'callable(string|int): void'],
         ['callable(): string', 'callable(): string|int'],
         ['callable(): string', 'callable(): void'],
+        ['callable(): mixed', 'callable'],
+        ['callable', 'callable(): mixed'],
+        ['callable(): int', 'callable'],
         // Tuples
         ['array{string, int}', 'array{string, int}'],
         ['array{string, int}', 'array{string}'],

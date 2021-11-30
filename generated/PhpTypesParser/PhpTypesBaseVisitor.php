@@ -42,17 +42,6 @@ class PhpTypesBaseVisitor extends AbstractParseTreeVisitor implements PhpTypesVi
 	 * The default implementation returns the result of calling
 	 * {@see self::visitChildren()} on `context`.
 	 */
-	public function visitGenericExpr(Context\GenericExprContext $context)
-	{
-	    return $this->visitChildren($context);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation returns the result of calling
-	 * {@see self::visitChildren()} on `context`.
-	 */
 	public function visitIntLiteralExpr(Context\IntLiteralExprContext $context)
 	{
 	    return $this->visitChildren($context);
@@ -108,7 +97,7 @@ class PhpTypesBaseVisitor extends AbstractParseTreeVisitor implements PhpTypesVi
 	 * The default implementation returns the result of calling
 	 * {@see self::visitChildren()} on `context`.
 	 */
-	public function visitGeneric(Context\GenericContext $context)
+	public function visitTypeList(Context\TypeListContext $context)
 	{
 	    return $this->visitChildren($context);
 	}
@@ -120,28 +109,6 @@ class PhpTypesBaseVisitor extends AbstractParseTreeVisitor implements PhpTypesVi
 	 * {@see self::visitChildren()} on `context`.
 	 */
 	public function visitCallableType(Context\CallableTypeContext $context)
-	{
-	    return $this->visitChildren($context);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation returns the result of calling
-	 * {@see self::visitChildren()} on `context`.
-	 */
-	public function visitArgumentList(Context\ArgumentListContext $context)
-	{
-	    return $this->visitChildren($context);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 *
-	 * The default implementation returns the result of calling
-	 * {@see self::visitChildren()} on `context`.
-	 */
-	public function visitReturnType(Context\ReturnTypeContext $context)
 	{
 	    return $this->visitChildren($context);
 	}
