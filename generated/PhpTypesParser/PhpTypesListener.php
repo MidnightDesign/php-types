@@ -37,18 +37,6 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitIntersection(Context\IntersectionContext $context) : void;
 	/**
-	 * Enter a parse tree produced by the `GenericExpr`
-	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
-	 * @param $context The parse tree.
-	 */
-	public function enterGenericExpr(Context\GenericExprContext $context) : void;
-	/**
-	 * Exit a parse tree produced by the `GenericExpr` labeled alternative
-	 * in {@see PhpTypesParser::typeExpr()}.
-	 * @param $context The parse tree.
-	 */
-	public function exitGenericExpr(Context\GenericExprContext $context) : void;
-	/**
 	 * Enter a parse tree produced by the `IntLiteralExpr`
 	 * labeled alternative in {@see PhpTypesParser::typeExpr()}.
 	 * @param $context The parse tree.
@@ -109,15 +97,15 @@ interface PhpTypesListener extends ParseTreeListener {
 	 */
 	public function exitUnion(Context\UnionContext $context) : void;
 	/**
-	 * Enter a parse tree produced by {@see PhpTypesParser::generic()}.
+	 * Enter a parse tree produced by {@see PhpTypesParser::typeList()}.
 	 * @param $context The parse tree.
 	 */
-	public function enterGeneric(Context\GenericContext $context) : void;
+	public function enterTypeList(Context\TypeListContext $context) : void;
 	/**
-	 * Exit a parse tree produced by {@see PhpTypesParser::generic()}.
+	 * Exit a parse tree produced by {@see PhpTypesParser::typeList()}.
 	 * @param $context The parse tree.
 	 */
-	public function exitGeneric(Context\GenericContext $context) : void;
+	public function exitTypeList(Context\TypeListContext $context) : void;
 	/**
 	 * Enter a parse tree produced by {@see PhpTypesParser::callableType()}.
 	 * @param $context The parse tree.

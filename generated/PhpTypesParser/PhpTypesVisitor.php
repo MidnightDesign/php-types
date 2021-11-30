@@ -34,16 +34,6 @@ interface PhpTypesVisitor extends ParseTreeVisitor
 	public function visitIntersection(Context\IntersectionContext $context);
 
 	/**
-	 * Visit a parse tree produced by the `GenericExpr` labeled alternative
-	 * in {@see PhpTypesParser::typeExpr()}.
-	 *
-	 * @param Context\GenericExprContext $context The parse tree.
-	 *
-	 * @return mixed The visitor result.
-	 */
-	public function visitGenericExpr(Context\GenericExprContext $context);
-
-	/**
 	 * Visit a parse tree produced by the `IntLiteralExpr` labeled alternative
 	 * in {@see PhpTypesParser::typeExpr()}.
 	 *
@@ -94,13 +84,13 @@ interface PhpTypesVisitor extends ParseTreeVisitor
 	public function visitUnion(Context\UnionContext $context);
 
 	/**
-	 * Visit a parse tree produced by {@see PhpTypesParser::generic()}.
+	 * Visit a parse tree produced by {@see PhpTypesParser::typeList()}.
 	 *
-	 * @param Context\GenericContext $context The parse tree.
+	 * @param Context\TypeListContext $context The parse tree.
 	 *
 	 * @return mixed The visitor result.
 	 */
-	public function visitGeneric(Context\GenericContext $context);
+	public function visitTypeList(Context\TypeListContext $context);
 
 	/**
 	 * Visit a parse tree produced by {@see PhpTypesParser::callableType()}.

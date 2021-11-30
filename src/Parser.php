@@ -12,8 +12,6 @@ use PhpTypesParser\Context\CallableTypeContext;
 use PhpTypesParser\Context\CurlyArrayContext;
 use PhpTypesParser\Context\CurlyArrayEntryContext;
 use PhpTypesParser\Context\CurlyArrayExprContext;
-use PhpTypesParser\Context\GenericContext;
-use PhpTypesParser\Context\GenericExprContext;
 use PhpTypesParser\Context\IntersectionContext;
 use PhpTypesParser\Context\IntLiteralExprContext;
 use PhpTypesParser\Context\SimpleExprContext;
@@ -60,12 +58,7 @@ final class Parser
     private static function fromTypeExpr(TypeExprContext $context, callable $resolve): TypeInterface
     {
         if ($context instanceof SimpleExprContext) {
-            return $resolve($context->getText());
-        }
-        if ($context instanceof GenericExprContext) {
-            $generic = $context->generic();
-            assert($generic !== null);
-            return self::fromGeneric($generic, $resolve);
+            return self::fromGeneric($context, $resolve);
         }
         if ($context instanceof CurlyArrayExprContext) {
             $curlyArray = $context->curlyArray();
@@ -95,15 +88,19 @@ final class Parser
     /**
      * @param Resolve $resolve
      */
-    private static function fromGeneric(GenericContext $generic, callable $resolve): TypeInterface
+    private static function fromGeneric(SimpleExprContext $context, callable $resolve): TypeInterface
     {
+        $typeList = $context->typeList();
+        if ($typeList === null) {
+            return $resolve($context->getText());
+        }
         $typeArguments = [];
-        $typeExpr = $generic->typeExpr();
+        $typeExpr = $typeList->typeExpr();
         assert(is_array($typeExpr));
         foreach ($typeExpr as $type) {
             $typeArguments[] = self::fromTypeExpr($type, $resolve);
         }
-        $identifier = $generic->Identifier();
+        $identifier = $context->Identifier();
         assert($identifier !== null);
         $typeName = $identifier->getText();
         assert($typeName !== null);

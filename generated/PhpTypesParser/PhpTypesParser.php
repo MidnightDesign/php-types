@@ -23,13 +23,13 @@ namespace PhpTypesParser {
 
 	final class PhpTypesParser extends Parser
 	{
-		public const T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, 
-               T__6 = 7, T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, T__11 = 12, 
-               T__12 = 13, IntLiteral = 14, Identifier = 15, Letter = 16, 
-               Number = 17, Digit = 18, Minus = 19, NonZeroDigit = 20, Zero = 21, 
-               WS = 22;
+		public const T__0 = 1, T__1 = 2, IntLiteral = 3, Identifier = 4, Letter = 5, 
+               Number = 6, Digit = 7, Minus = 8, NonZeroDigit = 9, Zero = 10, 
+               WS = 11, LT = 12, GT = 13, Comma = 14, Colon = 15, CurlyOpen = 16, 
+               CurlyClose = 17, Pipe = 18, Amp = 19, OpenParen = 20, CloseParen = 21, 
+               QuestionMark = 22, SingleQuote = 23, DoubleQuote = 24;
 
-		public const RULE_typeExpr = 0, RULE_generic = 1, RULE_callableType = 2, 
+		public const RULE_typeExpr = 0, RULE_typeList = 1, RULE_callableType = 2, 
                RULE_argumentList = 3, RULE_returnType = 4, RULE_curlyArray = 5, 
                RULE_curlyArrayEntry = 6, RULE_stringLiteral = 7;
 
@@ -37,7 +37,7 @@ namespace PhpTypesParser {
 		 * @var array<string>
 		 */
 		public const RULE_NAMES = [
-			'typeExpr', 'generic', 'callableType', 'argumentList', 'returnType', 
+			'typeExpr', 'typeList', 'callableType', 'argumentList', 'returnType', 
 			'curlyArray', 'curlyArrayEntry', 'stringLiteral'
 		];
 
@@ -45,18 +45,19 @@ namespace PhpTypesParser {
 		 * @var array<string|null>
 		 */
 		private const LITERAL_NAMES = [
-		    null, "'|'", "'&'", "'<'", "','", "'>'", "'callable('", "')'", "':'", 
-		    "'array{'", "'}'", "'?'", "'''", "'\"'", null, null, null, null, null, 
-		    "'-'", null, "'0'"
+		    null, "'callable'", "'array{'", null, null, null, null, null, "'-'", 
+		    null, "'0'", null, "'<'", "'>'", "','", "':'", "'{'", "'}'", "'|'", 
+		    "'&'", "'('", "')'", "'?'", "'''", "'\"'"
 		];
 
 		/**
 		 * @var array<string>
 		 */
 		private const SYMBOLIC_NAMES = [
-		    null, null, null, null, null, null, null, null, null, null, null, 
 		    null, null, null, "IntLiteral", "Identifier", "Letter", "Number", 
-		    "Digit", "Minus", "NonZeroDigit", "Zero", "WS"
+		    "Digit", "Minus", "NonZeroDigit", "Zero", "WS", "LT", "GT", "Comma", 
+		    "Colon", "CurlyOpen", "CurlyClose", "Pipe", "Amp", "OpenParen", "CloseParen", 
+		    "QuestionMark", "SingleQuote", "DoubleQuote"
 		];
 
 		/**
@@ -64,86 +65,88 @@ namespace PhpTypesParser {
 		 */
 		private const SERIALIZED_ATN =
 			"\u{3}\u{608B}\u{A72A}\u{8133}\u{B9ED}\u{417C}\u{3BE7}\u{7786}\u{5964}" .
-		    "\u{3}\u{18}\u{74}\u{4}\u{2}\u{9}\u{2}\u{4}\u{3}\u{9}\u{3}\u{4}\u{4}" .
+		    "\u{3}\u{1A}\u{76}\u{4}\u{2}\u{9}\u{2}\u{4}\u{3}\u{9}\u{3}\u{4}\u{4}" .
 		    "\u{9}\u{4}\u{4}\u{5}\u{9}\u{5}\u{4}\u{6}\u{9}\u{6}\u{4}\u{7}\u{9}" .
 		    "\u{7}\u{4}\u{8}\u{9}\u{8}\u{4}\u{9}\u{9}\u{9}\u{3}\u{2}\u{3}\u{2}" .
-		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{5}\u{2}\u{1A}" .
-		    "\u{A}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{7}" .
-		    "\u{2}\u{21}\u{A}\u{2}\u{C}\u{2}\u{E}\u{2}\u{24}\u{B}\u{2}\u{3}\u{2}" .
-		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{7}\u{2}\u{2B}\u{A}\u{2}" .
-		    "\u{C}\u{2}\u{E}\u{2}\u{2E}\u{B}\u{2}\u{7}\u{2}\u{30}\u{A}\u{2}\u{C}" .
-		    "\u{2}\u{E}\u{2}\u{33}\u{B}\u{2}\u{3}\u{3}\u{3}\u{3}\u{3}\u{3}\u{3}" .
-		    "\u{3}\u{3}\u{3}\u{7}\u{3}\u{3A}\u{A}\u{3}\u{C}\u{3}\u{E}\u{3}\u{3D}" .
-		    "\u{B}\u{3}\u{3}\u{3}\u{3}\u{3}\u{3}\u{4}\u{3}\u{4}\u{5}\u{4}\u{43}" .
-		    "\u{A}\u{4}\u{3}\u{4}\u{3}\u{4}\u{3}\u{4}\u{5}\u{4}\u{48}\u{A}\u{4}" .
-		    "\u{3}\u{5}\u{3}\u{5}\u{3}\u{5}\u{7}\u{5}\u{4D}\u{A}\u{5}\u{C}\u{5}" .
-		    "\u{E}\u{5}\u{50}\u{B}\u{5}\u{3}\u{6}\u{3}\u{6}\u{3}\u{7}\u{3}\u{7}" .
-		    "\u{3}\u{7}\u{3}\u{7}\u{7}\u{7}\u{58}\u{A}\u{7}\u{C}\u{7}\u{E}\u{7}" .
-		    "\u{5B}\u{B}\u{7}\u{3}\u{7}\u{3}\u{7}\u{5}\u{7}\u{5F}\u{A}\u{7}\u{3}" .
-		    "\u{7}\u{3}\u{7}\u{3}\u{8}\u{3}\u{8}\u{5}\u{8}\u{65}\u{A}\u{8}\u{3}" .
-		    "\u{8}\u{5}\u{8}\u{68}\u{A}\u{8}\u{3}\u{8}\u{3}\u{8}\u{3}\u{9}\u{3}" .
-		    "\u{9}\u{3}\u{9}\u{3}\u{9}\u{3}\u{9}\u{3}\u{9}\u{5}\u{9}\u{72}\u{A}" .
-		    "\u{9}\u{3}\u{9}\u{2}\u{3}\u{2}\u{A}\u{2}\u{4}\u{6}\u{8}\u{A}\u{C}" .
-		    "\u{E}\u{10}\u{2}\u{2}\u{2}\u{7D}\u{2}\u{19}\u{3}\u{2}\u{2}\u{2}\u{4}" .
-		    "\u{34}\u{3}\u{2}\u{2}\u{2}\u{6}\u{40}\u{3}\u{2}\u{2}\u{2}\u{8}\u{49}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{A}\u{51}\u{3}\u{2}\u{2}\u{2}\u{C}\u{53}\u{3}" .
-		    "\u{2}\u{2}\u{2}\u{E}\u{67}\u{3}\u{2}\u{2}\u{2}\u{10}\u{71}\u{3}\u{2}" .
-		    "\u{2}\u{2}\u{12}\u{13}\u{8}\u{2}\u{1}\u{2}\u{13}\u{1A}\u{7}\u{11}" .
-		    "\u{2}\u{2}\u{14}\u{1A}\u{5}\u{4}\u{3}\u{2}\u{15}\u{1A}\u{5}\u{6}\u{4}" .
-		    "\u{2}\u{16}\u{1A}\u{5}\u{C}\u{7}\u{2}\u{17}\u{1A}\u{5}\u{10}\u{9}" .
-		    "\u{2}\u{18}\u{1A}\u{7}\u{10}\u{2}\u{2}\u{19}\u{12}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{19}\u{14}\u{3}\u{2}\u{2}\u{2}\u{19}\u{15}\u{3}\u{2}\u{2}\u{2}" .
-		    "\u{19}\u{16}\u{3}\u{2}\u{2}\u{2}\u{19}\u{17}\u{3}\u{2}\u{2}\u{2}\u{19}" .
-		    "\u{18}\u{3}\u{2}\u{2}\u{2}\u{1A}\u{31}\u{3}\u{2}\u{2}\u{2}\u{1B}\u{1C}" .
-		    "\u{C}\u{4}\u{2}\u{2}\u{1C}\u{1D}\u{7}\u{3}\u{2}\u{2}\u{1D}\u{22}\u{5}" .
-		    "\u{2}\u{2}\u{2}\u{1E}\u{1F}\u{7}\u{3}\u{2}\u{2}\u{1F}\u{21}\u{5}\u{2}" .
-		    "\u{2}\u{2}\u{20}\u{1E}\u{3}\u{2}\u{2}\u{2}\u{21}\u{24}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{22}\u{20}\u{3}\u{2}\u{2}\u{2}\u{22}\u{23}\u{3}\u{2}\u{2}\u{2}" .
-		    "\u{23}\u{30}\u{3}\u{2}\u{2}\u{2}\u{24}\u{22}\u{3}\u{2}\u{2}\u{2}\u{25}" .
-		    "\u{26}\u{C}\u{3}\u{2}\u{2}\u{26}\u{27}\u{7}\u{4}\u{2}\u{2}\u{27}\u{2C}" .
-		    "\u{5}\u{2}\u{2}\u{2}\u{28}\u{29}\u{7}\u{4}\u{2}\u{2}\u{29}\u{2B}\u{5}" .
-		    "\u{2}\u{2}\u{2}\u{2A}\u{28}\u{3}\u{2}\u{2}\u{2}\u{2B}\u{2E}\u{3}\u{2}" .
-		    "\u{2}\u{2}\u{2C}\u{2A}\u{3}\u{2}\u{2}\u{2}\u{2C}\u{2D}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{2D}\u{30}\u{3}\u{2}\u{2}\u{2}\u{2E}\u{2C}\u{3}\u{2}\u{2}\u{2}" .
-		    "\u{2F}\u{1B}\u{3}\u{2}\u{2}\u{2}\u{2F}\u{25}\u{3}\u{2}\u{2}\u{2}\u{30}" .
-		    "\u{33}\u{3}\u{2}\u{2}\u{2}\u{31}\u{2F}\u{3}\u{2}\u{2}\u{2}\u{31}\u{32}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{32}\u{3}\u{3}\u{2}\u{2}\u{2}\u{33}\u{31}\u{3}" .
-		    "\u{2}\u{2}\u{2}\u{34}\u{35}\u{7}\u{11}\u{2}\u{2}\u{35}\u{36}\u{7}" .
-		    "\u{5}\u{2}\u{2}\u{36}\u{3B}\u{5}\u{2}\u{2}\u{2}\u{37}\u{38}\u{7}\u{6}" .
-		    "\u{2}\u{2}\u{38}\u{3A}\u{5}\u{2}\u{2}\u{2}\u{39}\u{37}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{3A}\u{3D}\u{3}\u{2}\u{2}\u{2}\u{3B}\u{39}\u{3}\u{2}\u{2}\u{2}" .
-		    "\u{3B}\u{3C}\u{3}\u{2}\u{2}\u{2}\u{3C}\u{3E}\u{3}\u{2}\u{2}\u{2}\u{3D}" .
-		    "\u{3B}\u{3}\u{2}\u{2}\u{2}\u{3E}\u{3F}\u{7}\u{7}\u{2}\u{2}\u{3F}\u{5}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{40}\u{42}\u{7}\u{8}\u{2}\u{2}\u{41}\u{43}\u{5}" .
-		    "\u{8}\u{5}\u{2}\u{42}\u{41}\u{3}\u{2}\u{2}\u{2}\u{42}\u{43}\u{3}\u{2}" .
-		    "\u{2}\u{2}\u{43}\u{44}\u{3}\u{2}\u{2}\u{2}\u{44}\u{47}\u{7}\u{9}\u{2}" .
-		    "\u{2}\u{45}\u{46}\u{7}\u{A}\u{2}\u{2}\u{46}\u{48}\u{5}\u{A}\u{6}\u{2}" .
-		    "\u{47}\u{45}\u{3}\u{2}\u{2}\u{2}\u{47}\u{48}\u{3}\u{2}\u{2}\u{2}\u{48}" .
-		    "\u{7}\u{3}\u{2}\u{2}\u{2}\u{49}\u{4E}\u{5}\u{2}\u{2}\u{2}\u{4A}\u{4B}" .
-		    "\u{7}\u{6}\u{2}\u{2}\u{4B}\u{4D}\u{5}\u{2}\u{2}\u{2}\u{4C}\u{4A}\u{3}" .
-		    "\u{2}\u{2}\u{2}\u{4D}\u{50}\u{3}\u{2}\u{2}\u{2}\u{4E}\u{4C}\u{3}\u{2}" .
-		    "\u{2}\u{2}\u{4E}\u{4F}\u{3}\u{2}\u{2}\u{2}\u{4F}\u{9}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{50}\u{4E}\u{3}\u{2}\u{2}\u{2}\u{51}\u{52}\u{5}\u{2}\u{2}\u{2}" .
-		    "\u{52}\u{B}\u{3}\u{2}\u{2}\u{2}\u{53}\u{59}\u{7}\u{B}\u{2}\u{2}\u{54}" .
-		    "\u{55}\u{5}\u{E}\u{8}\u{2}\u{55}\u{56}\u{7}\u{6}\u{2}\u{2}\u{56}\u{58}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{57}\u{54}\u{3}\u{2}\u{2}\u{2}\u{58}\u{5B}\u{3}" .
-		    "\u{2}\u{2}\u{2}\u{59}\u{57}\u{3}\u{2}\u{2}\u{2}\u{59}\u{5A}\u{3}\u{2}" .
-		    "\u{2}\u{2}\u{5A}\u{5C}\u{3}\u{2}\u{2}\u{2}\u{5B}\u{59}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{5C}\u{5E}\u{5}\u{E}\u{8}\u{2}\u{5D}\u{5F}\u{7}\u{6}\u{2}\u{2}" .
-		    "\u{5E}\u{5D}\u{3}\u{2}\u{2}\u{2}\u{5E}\u{5F}\u{3}\u{2}\u{2}\u{2}\u{5F}" .
-		    "\u{60}\u{3}\u{2}\u{2}\u{2}\u{60}\u{61}\u{7}\u{C}\u{2}\u{2}\u{61}\u{D}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{62}\u{64}\u{7}\u{11}\u{2}\u{2}\u{63}\u{65}" .
-		    "\u{7}\u{D}\u{2}\u{2}\u{64}\u{63}\u{3}\u{2}\u{2}\u{2}\u{64}\u{65}\u{3}" .
-		    "\u{2}\u{2}\u{2}\u{65}\u{66}\u{3}\u{2}\u{2}\u{2}\u{66}\u{68}\u{7}\u{A}" .
-		    "\u{2}\u{2}\u{67}\u{62}\u{3}\u{2}\u{2}\u{2}\u{67}\u{68}\u{3}\u{2}\u{2}" .
-		    "\u{2}\u{68}\u{69}\u{3}\u{2}\u{2}\u{2}\u{69}\u{6A}\u{5}\u{2}\u{2}\u{2}" .
-		    "\u{6A}\u{F}\u{3}\u{2}\u{2}\u{2}\u{6B}\u{6C}\u{7}\u{E}\u{2}\u{2}\u{6C}" .
-		    "\u{6D}\u{7}\u{11}\u{2}\u{2}\u{6D}\u{72}\u{7}\u{E}\u{2}\u{2}\u{6E}" .
-		    "\u{6F}\u{7}\u{F}\u{2}\u{2}\u{6F}\u{70}\u{7}\u{11}\u{2}\u{2}\u{70}" .
-		    "\u{72}\u{7}\u{F}\u{2}\u{2}\u{71}\u{6B}\u{3}\u{2}\u{2}\u{2}\u{71}\u{6E}" .
-		    "\u{3}\u{2}\u{2}\u{2}\u{72}\u{11}\u{3}\u{2}\u{2}\u{2}\u{10}\u{19}\u{22}" .
-		    "\u{2C}\u{2F}\u{31}\u{3B}\u{42}\u{47}\u{4E}\u{59}\u{5E}\u{64}\u{67}" .
-		    "\u{71}";
+		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{5}\u{2}\u{19}\u{A}\u{2}" .
+		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{5}\u{2}\u{1F}\u{A}\u{2}" .
+		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{7}\u{2}\u{26}" .
+		    "\u{A}\u{2}\u{C}\u{2}\u{E}\u{2}\u{29}\u{B}\u{2}\u{3}\u{2}\u{3}\u{2}" .
+		    "\u{3}\u{2}\u{3}\u{2}\u{3}\u{2}\u{7}\u{2}\u{30}\u{A}\u{2}\u{C}\u{2}" .
+		    "\u{E}\u{2}\u{33}\u{B}\u{2}\u{7}\u{2}\u{35}\u{A}\u{2}\u{C}\u{2}\u{E}" .
+		    "\u{2}\u{38}\u{B}\u{2}\u{3}\u{3}\u{3}\u{3}\u{3}\u{3}\u{7}\u{3}\u{3D}" .
+		    "\u{A}\u{3}\u{C}\u{3}\u{E}\u{3}\u{40}\u{B}\u{3}\u{3}\u{4}\u{3}\u{4}" .
+		    "\u{3}\u{4}\u{5}\u{4}\u{45}\u{A}\u{4}\u{3}\u{4}\u{3}\u{4}\u{3}\u{4}" .
+		    "\u{5}\u{4}\u{4A}\u{A}\u{4}\u{3}\u{5}\u{3}\u{5}\u{3}\u{5}\u{7}\u{5}" .
+		    "\u{4F}\u{A}\u{5}\u{C}\u{5}\u{E}\u{5}\u{52}\u{B}\u{5}\u{3}\u{6}\u{3}" .
+		    "\u{6}\u{3}\u{7}\u{3}\u{7}\u{3}\u{7}\u{3}\u{7}\u{7}\u{7}\u{5A}\u{A}" .
+		    "\u{7}\u{C}\u{7}\u{E}\u{7}\u{5D}\u{B}\u{7}\u{3}\u{7}\u{3}\u{7}\u{5}" .
+		    "\u{7}\u{61}\u{A}\u{7}\u{3}\u{7}\u{3}\u{7}\u{3}\u{8}\u{3}\u{8}\u{5}" .
+		    "\u{8}\u{67}\u{A}\u{8}\u{3}\u{8}\u{5}\u{8}\u{6A}\u{A}\u{8}\u{3}\u{8}" .
+		    "\u{3}\u{8}\u{3}\u{9}\u{3}\u{9}\u{3}\u{9}\u{3}\u{9}\u{3}\u{9}\u{3}" .
+		    "\u{9}\u{5}\u{9}\u{74}\u{A}\u{9}\u{3}\u{9}\u{2}\u{3}\u{2}\u{A}\u{2}" .
+		    "\u{4}\u{6}\u{8}\u{A}\u{C}\u{E}\u{10}\u{2}\u{2}\u{2}\u{7F}\u{2}\u{1E}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{4}\u{39}\u{3}\u{2}\u{2}\u{2}\u{6}\u{41}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{8}\u{4B}\u{3}\u{2}\u{2}\u{2}\u{A}\u{53}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{C}\u{55}\u{3}\u{2}\u{2}\u{2}\u{E}\u{69}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{10}\u{73}\u{3}\u{2}\u{2}\u{2}\u{12}\u{13}\u{8}\u{2}\u{1}\u{2}" .
+		    "\u{13}\u{18}\u{7}\u{6}\u{2}\u{2}\u{14}\u{15}\u{7}\u{E}\u{2}\u{2}\u{15}" .
+		    "\u{16}\u{5}\u{4}\u{3}\u{2}\u{16}\u{17}\u{7}\u{F}\u{2}\u{2}\u{17}\u{19}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{18}\u{14}\u{3}\u{2}\u{2}\u{2}\u{18}\u{19}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{19}\u{1F}\u{3}\u{2}\u{2}\u{2}\u{1A}\u{1F}\u{5}\u{6}" .
+		    "\u{4}\u{2}\u{1B}\u{1F}\u{5}\u{C}\u{7}\u{2}\u{1C}\u{1F}\u{5}\u{10}" .
+		    "\u{9}\u{2}\u{1D}\u{1F}\u{7}\u{5}\u{2}\u{2}\u{1E}\u{12}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{1E}\u{1A}\u{3}\u{2}\u{2}\u{2}\u{1E}\u{1B}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{1E}\u{1C}\u{3}\u{2}\u{2}\u{2}\u{1E}\u{1D}\u{3}\u{2}\u{2}\u{2}\u{1F}" .
+		    "\u{36}\u{3}\u{2}\u{2}\u{2}\u{20}\u{21}\u{C}\u{4}\u{2}\u{2}\u{21}\u{22}" .
+		    "\u{7}\u{14}\u{2}\u{2}\u{22}\u{27}\u{5}\u{2}\u{2}\u{2}\u{23}\u{24}" .
+		    "\u{7}\u{14}\u{2}\u{2}\u{24}\u{26}\u{5}\u{2}\u{2}\u{2}\u{25}\u{23}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{26}\u{29}\u{3}\u{2}\u{2}\u{2}\u{27}\u{25}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{27}\u{28}\u{3}\u{2}\u{2}\u{2}\u{28}\u{35}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{29}\u{27}\u{3}\u{2}\u{2}\u{2}\u{2A}\u{2B}\u{C}\u{3}\u{2}" .
+		    "\u{2}\u{2B}\u{2C}\u{7}\u{15}\u{2}\u{2}\u{2C}\u{31}\u{5}\u{2}\u{2}" .
+		    "\u{2}\u{2D}\u{2E}\u{7}\u{15}\u{2}\u{2}\u{2E}\u{30}\u{5}\u{2}\u{2}" .
+		    "\u{2}\u{2F}\u{2D}\u{3}\u{2}\u{2}\u{2}\u{30}\u{33}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{31}\u{2F}\u{3}\u{2}\u{2}\u{2}\u{31}\u{32}\u{3}\u{2}\u{2}\u{2}\u{32}" .
+		    "\u{35}\u{3}\u{2}\u{2}\u{2}\u{33}\u{31}\u{3}\u{2}\u{2}\u{2}\u{34}\u{20}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{34}\u{2A}\u{3}\u{2}\u{2}\u{2}\u{35}\u{38}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{36}\u{34}\u{3}\u{2}\u{2}\u{2}\u{36}\u{37}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{37}\u{3}\u{3}\u{2}\u{2}\u{2}\u{38}\u{36}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{39}\u{3E}\u{5}\u{2}\u{2}\u{2}\u{3A}\u{3B}\u{7}\u{10}\u{2}" .
+		    "\u{2}\u{3B}\u{3D}\u{5}\u{2}\u{2}\u{2}\u{3C}\u{3A}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{3D}\u{40}\u{3}\u{2}\u{2}\u{2}\u{3E}\u{3C}\u{3}\u{2}\u{2}\u{2}\u{3E}" .
+		    "\u{3F}\u{3}\u{2}\u{2}\u{2}\u{3F}\u{5}\u{3}\u{2}\u{2}\u{2}\u{40}\u{3E}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{41}\u{42}\u{7}\u{3}\u{2}\u{2}\u{42}\u{44}\u{7}" .
+		    "\u{16}\u{2}\u{2}\u{43}\u{45}\u{5}\u{8}\u{5}\u{2}\u{44}\u{43}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{44}\u{45}\u{3}\u{2}\u{2}\u{2}\u{45}\u{46}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{46}\u{49}\u{7}\u{17}\u{2}\u{2}\u{47}\u{48}\u{7}\u{11}" .
+		    "\u{2}\u{2}\u{48}\u{4A}\u{5}\u{A}\u{6}\u{2}\u{49}\u{47}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{49}\u{4A}\u{3}\u{2}\u{2}\u{2}\u{4A}\u{7}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{4B}\u{50}\u{5}\u{2}\u{2}\u{2}\u{4C}\u{4D}\u{7}\u{10}\u{2}\u{2}" .
+		    "\u{4D}\u{4F}\u{5}\u{2}\u{2}\u{2}\u{4E}\u{4C}\u{3}\u{2}\u{2}\u{2}\u{4F}" .
+		    "\u{52}\u{3}\u{2}\u{2}\u{2}\u{50}\u{4E}\u{3}\u{2}\u{2}\u{2}\u{50}\u{51}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{51}\u{9}\u{3}\u{2}\u{2}\u{2}\u{52}\u{50}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{53}\u{54}\u{5}\u{2}\u{2}\u{2}\u{54}\u{B}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{55}\u{5B}\u{7}\u{4}\u{2}\u{2}\u{56}\u{57}\u{5}\u{E}\u{8}" .
+		    "\u{2}\u{57}\u{58}\u{7}\u{10}\u{2}\u{2}\u{58}\u{5A}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{59}\u{56}\u{3}\u{2}\u{2}\u{2}\u{5A}\u{5D}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{5B}\u{59}\u{3}\u{2}\u{2}\u{2}\u{5B}\u{5C}\u{3}\u{2}\u{2}\u{2}\u{5C}" .
+		    "\u{5E}\u{3}\u{2}\u{2}\u{2}\u{5D}\u{5B}\u{3}\u{2}\u{2}\u{2}\u{5E}\u{60}" .
+		    "\u{5}\u{E}\u{8}\u{2}\u{5F}\u{61}\u{7}\u{10}\u{2}\u{2}\u{60}\u{5F}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{60}\u{61}\u{3}\u{2}\u{2}\u{2}\u{61}\u{62}\u{3}" .
+		    "\u{2}\u{2}\u{2}\u{62}\u{63}\u{7}\u{13}\u{2}\u{2}\u{63}\u{D}\u{3}\u{2}" .
+		    "\u{2}\u{2}\u{64}\u{66}\u{7}\u{6}\u{2}\u{2}\u{65}\u{67}\u{7}\u{18}" .
+		    "\u{2}\u{2}\u{66}\u{65}\u{3}\u{2}\u{2}\u{2}\u{66}\u{67}\u{3}\u{2}\u{2}" .
+		    "\u{2}\u{67}\u{68}\u{3}\u{2}\u{2}\u{2}\u{68}\u{6A}\u{7}\u{11}\u{2}" .
+		    "\u{2}\u{69}\u{64}\u{3}\u{2}\u{2}\u{2}\u{69}\u{6A}\u{3}\u{2}\u{2}\u{2}" .
+		    "\u{6A}\u{6B}\u{3}\u{2}\u{2}\u{2}\u{6B}\u{6C}\u{5}\u{2}\u{2}\u{2}\u{6C}" .
+		    "\u{F}\u{3}\u{2}\u{2}\u{2}\u{6D}\u{6E}\u{7}\u{19}\u{2}\u{2}\u{6E}\u{6F}" .
+		    "\u{7}\u{6}\u{2}\u{2}\u{6F}\u{74}\u{7}\u{19}\u{2}\u{2}\u{70}\u{71}" .
+		    "\u{7}\u{1A}\u{2}\u{2}\u{71}\u{72}\u{7}\u{6}\u{2}\u{2}\u{72}\u{74}" .
+		    "\u{7}\u{1A}\u{2}\u{2}\u{73}\u{6D}\u{3}\u{2}\u{2}\u{2}\u{73}\u{70}" .
+		    "\u{3}\u{2}\u{2}\u{2}\u{74}\u{11}\u{3}\u{2}\u{2}\u{2}\u{11}\u{18}\u{1E}" .
+		    "\u{27}\u{31}\u{34}\u{36}\u{3E}\u{44}\u{49}\u{50}\u{5B}\u{60}\u{66}" .
+		    "\u{69}\u{73}";
 
 		protected static $atn;
 		protected static $decisionToDFA;
@@ -227,64 +230,73 @@ namespace PhpTypesParser {
 
 			try {
 				$this->enterOuterAlt($localContext, 1);
-				$this->setState(23);
+				$this->setState(28);
 				$this->errorHandler->sync($this);
 
-				switch ($this->getInterpreter()->adaptivePredict($this->input, 0, $this->ctx)) {
-					case 1:
-					    $localContext = new Context\SimpleExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
+				switch ($this->input->LA(1)) {
+				    case self::Identifier:
+				    	$localContext = new Context\SimpleExprContext($localContext);
+				    	$this->ctx = $localContext;
+				    	$previousContext = $localContext;
 
-					    $this->setState(17);
-					    $this->match(self::Identifier);
-					break;
+				    	$this->setState(17);
+				    	$this->match(self::Identifier);
+				    	$this->setState(22);
+				    	$this->errorHandler->sync($this);
 
-					case 2:
-					    $localContext = new Context\GenericExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
-					    $this->setState(18);
-					    $this->generic();
-					break;
+				    	switch ($this->getInterpreter()->adaptivePredict($this->input, 0, $this->ctx)) {
+				    	    case 1:
+				    		    $this->setState(18);
+				    		    $this->match(self::LT);
+				    		    $this->setState(19);
+				    		    $this->typeList();
+				    		    $this->setState(20);
+				    		    $this->match(self::GT);
+				    		break;
+				    	}
+				    	break;
 
-					case 3:
-					    $localContext = new Context\CallableExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
-					    $this->setState(19);
-					    $this->callableType();
-					break;
+				    case self::T__0:
+				    	$localContext = new Context\CallableExprContext($localContext);
+				    	$this->ctx = $localContext;
+				    	$previousContext = $localContext;
+				    	$this->setState(24);
+				    	$this->callableType();
+				    	break;
 
-					case 4:
-					    $localContext = new Context\CurlyArrayExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
-					    $this->setState(20);
-					    $this->curlyArray();
-					break;
+				    case self::T__1:
+				    	$localContext = new Context\CurlyArrayExprContext($localContext);
+				    	$this->ctx = $localContext;
+				    	$previousContext = $localContext;
+				    	$this->setState(25);
+				    	$this->curlyArray();
+				    	break;
 
-					case 5:
-					    $localContext = new Context\StringLiteralExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
-					    $this->setState(21);
-					    $this->stringLiteral();
-					break;
+				    case self::SingleQuote:
+				    case self::DoubleQuote:
+				    	$localContext = new Context\StringLiteralExprContext($localContext);
+				    	$this->ctx = $localContext;
+				    	$previousContext = $localContext;
+				    	$this->setState(26);
+				    	$this->stringLiteral();
+				    	break;
 
-					case 6:
-					    $localContext = new Context\IntLiteralExprContext($localContext);
-					    $this->ctx = $localContext;
-					    $previousContext = $localContext;
-					    $this->setState(22);
-					    $this->match(self::IntLiteral);
-					break;
+				    case self::IntLiteral:
+				    	$localContext = new Context\IntLiteralExprContext($localContext);
+				    	$this->ctx = $localContext;
+				    	$previousContext = $localContext;
+				    	$this->setState(27);
+				    	$this->match(self::IntLiteral);
+				    	break;
+
+				default:
+					throw new NoViableAltException($this);
 				}
 				$this->ctx->stop = $this->input->LT(-1);
-				$this->setState(47);
+				$this->setState(52);
 				$this->errorHandler->sync($this);
 
-				$alt = $this->getInterpreter()->adaptivePredict($this->input, 4, $this->ctx);
+				$alt = $this->getInterpreter()->adaptivePredict($this->input, 5, $this->ctx);
 
 				while ($alt !== 2 && $alt !== ATN::INVALID_ALT_NUMBER) {
 					if ($alt === 1) {
@@ -293,80 +305,80 @@ namespace PhpTypesParser {
 						}
 
 						$previousContext = $localContext;
-						$this->setState(45);
+						$this->setState(50);
 						$this->errorHandler->sync($this);
 
-						switch ($this->getInterpreter()->adaptivePredict($this->input, 3, $this->ctx)) {
+						switch ($this->getInterpreter()->adaptivePredict($this->input, 4, $this->ctx)) {
 							case 1:
 							    $localContext = new Context\UnionContext(new Context\TypeExprContext($parentContext, $parentState));
 							    $this->pushNewRecursionContext($localContext, $startState, self::RULE_typeExpr);
-							    $this->setState(25);
+							    $this->setState(30);
 
 							    if (!($this->precpred($this->ctx, 2))) {
 							        throw new FailedPredicateException($this, "\\\$this->precpred(\\\$this->ctx, 2)");
 							    }
-							    $this->setState(26);
-							    $this->match(self::T__0);
-							    $this->setState(27);
-							    $this->recursiveTypeExpr(0);
+							    $this->setState(31);
+							    $this->match(self::Pipe);
 							    $this->setState(32);
-							    $this->errorHandler->sync($this);
-
-							    $alt = $this->getInterpreter()->adaptivePredict($this->input, 1, $this->ctx);
-
-							    while ($alt !== 2 && $alt !== ATN::INVALID_ALT_NUMBER) {
-							    	if ($alt === 1) {
-							    		$this->setState(28);
-							    		$this->match(self::T__0);
-							    		$this->setState(29);
-							    		$this->recursiveTypeExpr(0); 
-							    	}
-
-							    	$this->setState(34);
-							    	$this->errorHandler->sync($this);
-
-							    	$alt = $this->getInterpreter()->adaptivePredict($this->input, 1, $this->ctx);
-							    }
-							break;
-
-							case 2:
-							    $localContext = new Context\IntersectionContext(new Context\TypeExprContext($parentContext, $parentState));
-							    $this->pushNewRecursionContext($localContext, $startState, self::RULE_typeExpr);
-							    $this->setState(35);
-
-							    if (!($this->precpred($this->ctx, 1))) {
-							        throw new FailedPredicateException($this, "\\\$this->precpred(\\\$this->ctx, 1)");
-							    }
-							    $this->setState(36);
-							    $this->match(self::T__1);
-							    $this->setState(37);
 							    $this->recursiveTypeExpr(0);
-							    $this->setState(42);
+							    $this->setState(37);
 							    $this->errorHandler->sync($this);
 
 							    $alt = $this->getInterpreter()->adaptivePredict($this->input, 2, $this->ctx);
 
 							    while ($alt !== 2 && $alt !== ATN::INVALID_ALT_NUMBER) {
 							    	if ($alt === 1) {
-							    		$this->setState(38);
-							    		$this->match(self::T__1);
-							    		$this->setState(39);
+							    		$this->setState(33);
+							    		$this->match(self::Pipe);
+							    		$this->setState(34);
 							    		$this->recursiveTypeExpr(0); 
 							    	}
 
-							    	$this->setState(44);
+							    	$this->setState(39);
 							    	$this->errorHandler->sync($this);
 
 							    	$alt = $this->getInterpreter()->adaptivePredict($this->input, 2, $this->ctx);
 							    }
 							break;
+
+							case 2:
+							    $localContext = new Context\IntersectionContext(new Context\TypeExprContext($parentContext, $parentState));
+							    $this->pushNewRecursionContext($localContext, $startState, self::RULE_typeExpr);
+							    $this->setState(40);
+
+							    if (!($this->precpred($this->ctx, 1))) {
+							        throw new FailedPredicateException($this, "\\\$this->precpred(\\\$this->ctx, 1)");
+							    }
+							    $this->setState(41);
+							    $this->match(self::Amp);
+							    $this->setState(42);
+							    $this->recursiveTypeExpr(0);
+							    $this->setState(47);
+							    $this->errorHandler->sync($this);
+
+							    $alt = $this->getInterpreter()->adaptivePredict($this->input, 3, $this->ctx);
+
+							    while ($alt !== 2 && $alt !== ATN::INVALID_ALT_NUMBER) {
+							    	if ($alt === 1) {
+							    		$this->setState(43);
+							    		$this->match(self::Amp);
+							    		$this->setState(44);
+							    		$this->recursiveTypeExpr(0); 
+							    	}
+
+							    	$this->setState(49);
+							    	$this->errorHandler->sync($this);
+
+							    	$alt = $this->getInterpreter()->adaptivePredict($this->input, 3, $this->ctx);
+							    }
+							break;
 						} 
 					}
 
-					$this->setState(49);
+					$this->setState(54);
 					$this->errorHandler->sync($this);
 
-					$alt = $this->getInterpreter()->adaptivePredict($this->input, 4, $this->ctx);
+					$alt = $this->getInterpreter()->adaptivePredict($this->input, 5, $this->ctx);
 				}
 			} catch (RecognitionException $exception) {
 				$localContext->exception = $exception;
@@ -382,35 +394,29 @@ namespace PhpTypesParser {
 		/**
 		 * @throws RecognitionException
 		 */
-		public function generic() : Context\GenericContext
+		public function typeList() : Context\TypeListContext
 		{
-		    $localContext = new Context\GenericContext($this->ctx, $this->getState());
+		    $localContext = new Context\TypeListContext($this->ctx, $this->getState());
 
-		    $this->enterRule($localContext, 2, self::RULE_generic);
+		    $this->enterRule($localContext, 2, self::RULE_typeList);
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(50);
-		        $this->match(self::Identifier);
-		        $this->setState(51);
-		        $this->match(self::T__2);
-		        $this->setState(52);
+		        $this->setState(55);
 		        $this->recursiveTypeExpr(0);
-		        $this->setState(57);
+		        $this->setState(60);
 		        $this->errorHandler->sync($this);
 
 		        $_la = $this->input->LA(1);
-		        while ($_la === self::T__3) {
-		        	$this->setState(53);
-		        	$this->match(self::T__3);
-		        	$this->setState(54);
+		        while ($_la === self::Comma) {
+		        	$this->setState(56);
+		        	$this->match(self::Comma);
+		        	$this->setState(57);
 		        	$this->recursiveTypeExpr(0);
-		        	$this->setState(59);
+		        	$this->setState(62);
 		        	$this->errorHandler->sync($this);
 		        	$_la = $this->input->LA(1);
 		        }
-		        $this->setState(60);
-		        $this->match(self::T__4);
 		    } catch (RecognitionException $exception) {
 		        $localContext->exception = $exception;
 		        $this->errorHandler->reportError($this, $exception);
@@ -433,26 +439,28 @@ namespace PhpTypesParser {
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(62);
-		        $this->match(self::T__5);
+		        $this->setState(63);
+		        $this->match(self::T__0);
 		        $this->setState(64);
+		        $this->match(self::OpenParen);
+		        $this->setState(66);
 		        $this->errorHandler->sync($this);
 		        $_la = $this->input->LA(1);
 
-		        if (((($_la) & ~0x3f) === 0 && ((1 << $_la) & ((1 << self::T__5) | (1 << self::T__8) | (1 << self::T__11) | (1 << self::T__12) | (1 << self::IntLiteral) | (1 << self::Identifier))) !== 0)) {
-		        	$this->setState(63);
+		        if (((($_la) & ~0x3f) === 0 && ((1 << $_la) & ((1 << self::T__0) | (1 << self::T__1) | (1 << self::IntLiteral) | (1 << self::Identifier) | (1 << self::SingleQuote) | (1 << self::DoubleQuote))) !== 0)) {
+		        	$this->setState(65);
 		        	$this->argumentList();
 		        }
-		        $this->setState(66);
-		        $this->match(self::T__6);
-		        $this->setState(69);
+		        $this->setState(68);
+		        $this->match(self::CloseParen);
+		        $this->setState(71);
 		        $this->errorHandler->sync($this);
 
-		        switch ($this->getInterpreter()->adaptivePredict($this->input, 7, $this->ctx)) {
+		        switch ($this->getInterpreter()->adaptivePredict($this->input, 8, $this->ctx)) {
 		            case 1:
-		        	    $this->setState(67);
-		        	    $this->match(self::T__7);
-		        	    $this->setState(68);
+		        	    $this->setState(69);
+		        	    $this->match(self::Colon);
+		        	    $this->setState(70);
 		        	    $this->returnType();
 		        	break;
 		        }
@@ -478,18 +486,18 @@ namespace PhpTypesParser {
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(71);
+		        $this->setState(73);
 		        $this->recursiveTypeExpr(0);
-		        $this->setState(76);
+		        $this->setState(78);
 		        $this->errorHandler->sync($this);
 
 		        $_la = $this->input->LA(1);
-		        while ($_la === self::T__3) {
-		        	$this->setState(72);
-		        	$this->match(self::T__3);
-		        	$this->setState(73);
+		        while ($_la === self::Comma) {
+		        	$this->setState(74);
+		        	$this->match(self::Comma);
+		        	$this->setState(75);
 		        	$this->recursiveTypeExpr(0);
-		        	$this->setState(78);
+		        	$this->setState(80);
 		        	$this->errorHandler->sync($this);
 		        	$_la = $this->input->LA(1);
 		        }
@@ -515,7 +523,7 @@ namespace PhpTypesParser {
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(79);
+		        $this->setState(81);
 		        $this->recursiveTypeExpr(0);
 		    } catch (RecognitionException $exception) {
 		        $localContext->exception = $exception;
@@ -539,39 +547,39 @@ namespace PhpTypesParser {
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(81);
-		        $this->match(self::T__8);
-		        $this->setState(87);
+		        $this->setState(83);
+		        $this->match(self::T__1);
+		        $this->setState(89);
 		        $this->errorHandler->sync($this);
 
-		        $alt = $this->getInterpreter()->adaptivePredict($this->input, 9, $this->ctx);
+		        $alt = $this->getInterpreter()->adaptivePredict($this->input, 10, $this->ctx);
 
 		        while ($alt !== 2 && $alt !== ATN::INVALID_ALT_NUMBER) {
 		        	if ($alt === 1) {
-		        		$this->setState(82);
+		        		$this->setState(84);
 		        		$this->curlyArrayEntry();
-		        		$this->setState(83);
-		        		$this->match(self::T__3); 
+		        		$this->setState(85);
+		        		$this->match(self::Comma); 
 		        	}
 
-		        	$this->setState(89);
+		        	$this->setState(91);
 		        	$this->errorHandler->sync($this);
 
-		        	$alt = $this->getInterpreter()->adaptivePredict($this->input, 9, $this->ctx);
+		        	$alt = $this->getInterpreter()->adaptivePredict($this->input, 10, $this->ctx);
 		        }
 
-		        $this->setState(90);
-		        $this->curlyArrayEntry();
 		        $this->setState(92);
+		        $this->curlyArrayEntry();
+		        $this->setState(94);
 		        $this->errorHandler->sync($this);
 		        $_la = $this->input->LA(1);
 
-		        if ($_la === self::T__3) {
-		        	$this->setState(91);
-		        	$this->match(self::T__3);
+		        if ($_la === self::Comma) {
+		        	$this->setState(93);
+		        	$this->match(self::Comma);
 		        }
-		        $this->setState(94);
-		        $this->match(self::T__9);
+		        $this->setState(96);
+		        $this->match(self::CurlyClose);
 		    } catch (RecognitionException $exception) {
 		        $localContext->exception = $exception;
 		        $this->errorHandler->reportError($this, $exception);
@@ -594,26 +602,26 @@ namespace PhpTypesParser {
 
 		    try {
 		        $this->enterOuterAlt($localContext, 1);
-		        $this->setState(101);
+		        $this->setState(103);
 		        $this->errorHandler->sync($this);
 
-		        switch ($this->getInterpreter()->adaptivePredict($this->input, 12, $this->ctx)) {
+		        switch ($this->getInterpreter()->adaptivePredict($this->input, 13, $this->ctx)) {
 		            case 1:
-		        	    $this->setState(96);
-		        	    $this->match(self::Identifier);
 		        	    $this->setState(98);
+		        	    $this->match(self::Identifier);
+		        	    $this->setState(100);
 		        	    $this->errorHandler->sync($this);
 		        	    $_la = $this->input->LA(1);
 
-		        	    if ($_la === self::T__10) {
-		        	    	$this->setState(97);
-		        	    	$localContext->optional = $this->match(self::T__10);
+		        	    if ($_la === self::QuestionMark) {
+		        	    	$this->setState(99);
+		        	    	$localContext->optional = $this->match(self::QuestionMark);
 		        	    }
-		        	    $this->setState(100);
-		        	    $this->match(self::T__7);
+		        	    $this->setState(102);
+		        	    $this->match(self::Colon);
 		        	break;
 		        }
-		        $this->setState(103);
+		        $this->setState(105);
 		        $this->recursiveTypeExpr(0);
 		    } catch (RecognitionException $exception) {
 		        $localContext->exception = $exception;
@@ -636,28 +644,28 @@ namespace PhpTypesParser {
 		    $this->enterRule($localContext, 14, self::RULE_stringLiteral);
 
 		    try {
-		        $this->setState(111);
+		        $this->setState(113);
 		        $this->errorHandler->sync($this);
 
 		        switch ($this->input->LA(1)) {
-		            case self::T__11:
+		            case self::SingleQuote:
 		            	$this->enterOuterAlt($localContext, 1);
-		            	$this->setState(105);
-		            	$this->match(self::T__11);
-		            	$this->setState(106);
-		            	$this->match(self::Identifier);
 		            	$this->setState(107);
-		            	$this->match(self::T__11);
+		            	$this->match(self::SingleQuote);
+		            	$this->setState(108);
+		            	$this->match(self::Identifier);
+		            	$this->setState(109);
+		            	$this->match(self::SingleQuote);
 		            	break;
 
-		            case self::T__12:
+		            case self::DoubleQuote:
 		            	$this->enterOuterAlt($localContext, 2);
-		            	$this->setState(108);
-		            	$this->match(self::T__12);
-		            	$this->setState(109);
-		            	$this->match(self::Identifier);
 		            	$this->setState(110);
-		            	$this->match(self::T__12);
+		            	$this->match(self::DoubleQuote);
+		            	$this->setState(111);
+		            	$this->match(self::Identifier);
+		            	$this->setState(112);
+		            	$this->match(self::DoubleQuote);
 		            	break;
 
 		        default:
@@ -743,6 +751,21 @@ namespace PhpTypesParser\Context {
 	        return $this->getToken(PhpTypesParser::Identifier, 0);
 	    }
 
+	    public function LT() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::LT, 0);
+	    }
+
+	    public function typeList() : ?TypeListContext
+	    {
+	    	return $this->getTypedRuleContext(TypeListContext::class, 0);
+	    }
+
+	    public function GT() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::GT, 0);
+	    }
+
 		public function enterRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
@@ -788,6 +811,18 @@ namespace PhpTypesParser\Context {
 	        return $this->getTypedRuleContext(TypeExprContext::class, $index);
 	    }
 
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function Amp(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::Amp);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::Amp, $index);
+	    }
+
 		public function enterRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
@@ -806,44 +841,6 @@ namespace PhpTypesParser\Context {
 		{
 			if ($visitor instanceof PhpTypesVisitor) {
 			    return $visitor->visitIntersection($this);
-		    }
-
-			return $visitor->visitChildren($this);
-		}
-	}
-
-	class GenericExprContext extends TypeExprContext
-	{
-		public function __construct(TypeExprContext $context)
-		{
-		    parent::__construct($context);
-
-		    $this->copyFrom($context);
-	    }
-
-	    public function generic() : ?GenericContext
-	    {
-	    	return $this->getTypedRuleContext(GenericContext::class, 0);
-	    }
-
-		public function enterRule(ParseTreeListener $listener) : void
-		{
-			if ($listener instanceof PhpTypesListener) {
-			    $listener->enterGenericExpr($this);
-		    }
-		}
-
-		public function exitRule(ParseTreeListener $listener) : void
-		{
-			if ($listener instanceof PhpTypesListener) {
-			    $listener->exitGenericExpr($this);
-		    }
-		}
-
-		public function accept(ParseTreeVisitor $visitor)
-		{
-			if ($visitor instanceof PhpTypesVisitor) {
-			    return $visitor->visitGenericExpr($this);
 		    }
 
 			return $visitor->visitChildren($this);
@@ -1023,6 +1020,18 @@ namespace PhpTypesParser\Context {
 	        return $this->getTypedRuleContext(TypeExprContext::class, $index);
 	    }
 
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function Pipe(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::Pipe);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::Pipe, $index);
+	    }
+
 		public function enterRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
@@ -1047,7 +1056,7 @@ namespace PhpTypesParser\Context {
 		}
 	} 
 
-	class GenericContext extends ParserRuleContext
+	class TypeListContext extends ParserRuleContext
 	{
 		public function __construct(?ParserRuleContext $parent, ?int $invokingState = null)
 		{
@@ -1056,12 +1065,7 @@ namespace PhpTypesParser\Context {
 
 		public function getRuleIndex() : int
 		{
-		    return PhpTypesParser::RULE_generic;
-	    }
-
-	    public function Identifier() : ?TerminalNode
-	    {
-	        return $this->getToken(PhpTypesParser::Identifier, 0);
+		    return PhpTypesParser::RULE_typeList;
 	    }
 
 	    /**
@@ -1076,24 +1080,36 @@ namespace PhpTypesParser\Context {
 	        return $this->getTypedRuleContext(TypeExprContext::class, $index);
 	    }
 
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function Comma(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::Comma);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::Comma, $index);
+	    }
+
 		public function enterRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
-			    $listener->enterGeneric($this);
+			    $listener->enterTypeList($this);
 		    }
 		}
 
 		public function exitRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
-			    $listener->exitGeneric($this);
+			    $listener->exitTypeList($this);
 		    }
 		}
 
 		public function accept(ParseTreeVisitor $visitor)
 		{
 			if ($visitor instanceof PhpTypesVisitor) {
-			    return $visitor->visitGeneric($this);
+			    return $visitor->visitTypeList($this);
 		    }
 
 			return $visitor->visitChildren($this);
@@ -1112,9 +1128,24 @@ namespace PhpTypesParser\Context {
 		    return PhpTypesParser::RULE_callableType;
 	    }
 
+	    public function OpenParen() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::OpenParen, 0);
+	    }
+
+	    public function CloseParen() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::CloseParen, 0);
+	    }
+
 	    public function argumentList() : ?ArgumentListContext
 	    {
 	    	return $this->getTypedRuleContext(ArgumentListContext::class, 0);
+	    }
+
+	    public function Colon() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::Colon, 0);
 	    }
 
 	    public function returnType() : ?ReturnTypeContext
@@ -1168,6 +1199,18 @@ namespace PhpTypesParser\Context {
 	    	}
 
 	        return $this->getTypedRuleContext(TypeExprContext::class, $index);
+	    }
+
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function Comma(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::Comma);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::Comma, $index);
 	    }
 
 		public function enterRule(ParseTreeListener $listener) : void
@@ -1247,6 +1290,11 @@ namespace PhpTypesParser\Context {
 		    return PhpTypesParser::RULE_curlyArray;
 	    }
 
+	    public function CurlyClose() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::CurlyClose, 0);
+	    }
+
 	    /**
 	     * @return array<CurlyArrayEntryContext>|CurlyArrayEntryContext|null
 	     */
@@ -1257,6 +1305,18 @@ namespace PhpTypesParser\Context {
 	    	}
 
 	        return $this->getTypedRuleContext(CurlyArrayEntryContext::class, $index);
+	    }
+
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function Comma(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::Comma);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::Comma, $index);
 	    }
 
 		public function enterRule(ParseTreeListener $listener) : void
@@ -1310,6 +1370,16 @@ namespace PhpTypesParser\Context {
 	        return $this->getToken(PhpTypesParser::Identifier, 0);
 	    }
 
+	    public function Colon() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::Colon, 0);
+	    }
+
+	    public function QuestionMark() : ?TerminalNode
+	    {
+	        return $this->getToken(PhpTypesParser::QuestionMark, 0);
+	    }
+
 		public function enterRule(ParseTreeListener $listener) : void
 		{
 			if ($listener instanceof PhpTypesListener) {
@@ -1346,9 +1416,33 @@ namespace PhpTypesParser\Context {
 		    return PhpTypesParser::RULE_stringLiteral;
 	    }
 
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function SingleQuote(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::SingleQuote);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::SingleQuote, $index);
+	    }
+
 	    public function Identifier() : ?TerminalNode
 	    {
 	        return $this->getToken(PhpTypesParser::Identifier, 0);
+	    }
+
+	    /**
+	     * @return array<TerminalNode>|TerminalNode|null
+	     */
+	    public function DoubleQuote(?int $index = null)
+	    {
+	    	if ($index === null) {
+	    		return $this->getTokens(PhpTypesParser::DoubleQuote);
+	    	}
+
+	        return $this->getToken(PhpTypesParser::DoubleQuote, $index);
 	    }
 
 		public function enterRule(ParseTreeListener $listener) : void

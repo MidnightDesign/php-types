@@ -1,26 +1,25 @@
 grammar PhpTypes;
 
 typeExpr
-    : Identifier                            #SimpleExpr
-    | generic                               #GenericExpr
-    | callableType                          #CallableExpr
-    | curlyArray                            #CurlyArrayExpr
-    | stringLiteral                         #StringLiteralExpr
-    | IntLiteral                            #IntLiteralExpr
-    | typeExpr '|' typeExpr ('|' typeExpr)* #Union
-    | typeExpr '&' typeExpr ('&' typeExpr)* #Intersection
+    : Identifier (LT typeList GT)?            #SimpleExpr
+    | callableType                            #CallableExpr
+    | curlyArray                              #CurlyArrayExpr
+    | stringLiteral                           #StringLiteralExpr
+    | IntLiteral                              #IntLiteralExpr
+    | typeExpr Pipe typeExpr (Pipe typeExpr)* #Union
+    | typeExpr Amp typeExpr (Amp typeExpr)*   #Intersection
     ;
 
-generic
-    : Identifier '<' typeExpr (',' typeExpr)* '>'
+typeList
+    : typeExpr (Comma typeExpr)*
     ;
 
 callableType
-    : 'callable(' argumentList? ')' (':' returnType)?
+    : 'callable' OpenParen argumentList? CloseParen (Colon returnType)?
     ;
 
 argumentList
-    : typeExpr (',' typeExpr)*
+    : typeExpr (Comma typeExpr)*
     ;
 
 returnType
@@ -28,16 +27,16 @@ returnType
     ;
 
 curlyArray
-    : 'array{' (curlyArrayEntry ',')* (curlyArrayEntry ','?) '}'
+    : 'array{' (curlyArrayEntry Comma)* (curlyArrayEntry Comma?) '}'
     ;
 
 curlyArrayEntry
-    : (Identifier optional='?'? ':')? typeExpr
+    : (Identifier optional=QuestionMark? Colon)? typeExpr
     ;
 
 stringLiteral
-    : '\'' Identifier '\''
-    | '"' Identifier '"'
+    : SingleQuote Identifier SingleQuote
+    | DoubleQuote Identifier DoubleQuote
     ;
 
 IntLiteral
@@ -46,7 +45,7 @@ IntLiteral
     ;
 
 Identifier
-    : Letter (('-')? [a-zA-Z0-9-])*
+    : Letter ((Minus)? [a-zA-Z0-9-])*
     ;
 
 Letter
@@ -75,4 +74,56 @@ Zero
 
 WS
     : [ \t\n] -> skip
+    ;
+
+LT
+    : '<'
+    ;
+
+GT
+    : '>'
+    ;
+
+Comma
+    : ','
+    ;
+
+Colon
+    : ':'
+    ;
+
+CurlyOpen
+    : '{'
+    ;
+
+CurlyClose
+    : '}'
+    ;
+
+Pipe
+    : '|'
+    ;
+
+Amp
+    : '&'
+    ;
+
+OpenParen
+    : '('
+    ;
+
+CloseParen
+    : ')'
+    ;
+
+QuestionMark
+    : '?'
+    ;
+
+SingleQuote
+    : '\''
+    ;
+
+DoubleQuote
+    : '"'
     ;
