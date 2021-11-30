@@ -8,158 +8,63 @@ use PhpTypes\ClassType;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
+use function explode;
+use function fgets;
+use function str_starts_with;
+use function trim;
+
 class TypeCompatibilityTest extends TestCase
 {
-    private const COMPATIBLE_TYPES = [
-        // Basic types
-        ['string', 'string'],
-        ['int', 'int'],
-        ['float', 'float'],
-        ['bool', 'bool'],
-        ['string', 'mixed'],
-        ['int', 'mixed'],
-        ['float', 'mixed'],
-        ['bool', 'mixed'],
-        ['true', 'bool'],
-        ['false', 'bool'],
-        ['true', 'true'],
-        ['false', 'false'],
-        ['object', 'mixed'],
-        ['object', 'object'],
-        ['array', 'iterable'],
-        ['Foo', 'object'],
-        ['int', '(int)'],
-        ['(int)', 'int'],
-        // Unions
-        ['string', 'string|int'],
-        ['int', 'string|int'],
-        ['float', 'string|float|int'],
-        ['int', 'string|mixed'],
-        ['string|int', 'string|int|bool'],
-        ['string|int', 'bool|int|string'],
-        ['string', 'string|null'],
-        ['null', 'string|null'],
-        // Callables
-        ['callable(string): void', 'callable(string|int): void'],
-        ['callable(): string', 'callable(): string|int'],
-        ['callable(): string', 'callable(): void'],
-        ['callable(): mixed', 'callable'],
-        ['callable', 'callable(): mixed'],
-        ['callable(): int', 'callable'],
-        ['callable(): string', 'callable(): (int|string)'],
-        // Tuples
-        ['array{string, int}', 'array{string, int}'],
-        ['array{string, int}', 'array{string}'],
-        ['array{string, int}', 'array{string, int|bool}'],
-        // Structs
-        ['array{foo: string}', 'array{foo: string}'],
-        ['array{foo: string}', 'array{foo: string|int}'],
-        ['array{foo: string, bar: int}', 'array{foo: string, bar: int}'],
-        ['array{foo: string}', 'array{foo?: string}'],
-        ['array{bar: int}', 'array{foo?: string, bar: int}'],
-        ['array{foo: string, bar: int}', 'array{foo: string}'],
-        ['array{foo: string, bar: int}', 'array{bar: int, foo: string}'],
-        ['array{foo?: string}', 'array{foo?: string}'],
-        // String Literals
-        ['"test"', '"test"'],
-        ['\'test\'', '\'test\''],
-        ['\'test\'', '"test"'],
-        ['"test"', '\'test\''],
-        ['"test"', 'string'],
-        ['\'test\'', 'string'],
-        ['\'test\'', 'mixed'],
-        ['"test"', 'mixed'],
-        // Int Literals
-        ['0', '0'],
-        ['0', 'int'],
-        ['1', '1'],
-        ['1', 'int'],
-        ['69', '69'],
-        ['69', 'int'],
-        ['-1', '-1'],
-        ['-1', 'int'],
-        ['-69', '-69'],
-        ['-69', 'int'],
-        // Collections
-        ['list<int>', 'list<int>'],
-        ['list<string>', 'array<int, string>'],
-        ['array<string>', 'iterable<string>'],
-        ['array<array-key, string>', 'array<string>'],
-        ['array<array-key, mixed>', 'array'],
-        ['array<string, float>', 'array<float>'],
-        ['iterable<string>', 'iterable<string|int>'],
-        ['list<bool>', 'iterable<bool>'],
-        ['array{foo: string}', 'array<string, string>'],
-        ['array{foo: string, bar: string}', 'array<string, string>'],
-        ['array{foo: string, bar: int}', 'array<string, string|int>'],
-        ['array{"foo", "bar"}', 'list<string>'],
-        ['array{string, string}', 'list<string>'],
-        ['array{int, string}', 'list<string|int>'],
-        ['array{string, string}', 'array<int, string>'],
-        ['list<mixed>', 'list'],
-        // Classes
-        ['Foo', 'Foo'],
-        ['Foo', 'FooInterface'],
-        // Parens
-        ['string', '(callable(): string)|string'],
-        ['callable(): string', '(callable(): string)|string'],
-    ];
-    private const INCOMPATIBLE_TYPES = [
-        // Simple
-        ['string', 'int'],
-        ['mixed', 'bool'],
-        ['string|int', 'int'],
-        ['false', 'true'],
-        ['bool', 'true'],
-        ['true', 'false'],
-        ['bool', 'false'],
-        ['mixed', 'object'],
-        ['string|int', 'string'],
-        // Union
-        ['string|int|bool', 'int|string'],
-        ['string|int', 'string|float'],
-        ['bool', 'string|float'],
-        // Callable
-        ['callable(): void', 'callable(float): void'],
-        ['callable(): int', 'callable(): string'],
-        ['callable(string): void', 'callable(float): void'],
-        ['string', 'callable(): void'],
-        // Tuple
-        ['array{string}', 'array{string, float}'],
-        ['array{float, float}', 'array{string|int, float}'],
-        ['int', 'array{int, string}'],
-        // Struct
-        ['array{foo: string}', 'array{foo: int}'],
-        ['array{foo: string}', 'array{foo: string, bar: int}'],
-        ['array{foo?: string}', 'array{foo: string}'],
-        ['bool', 'array{foo: string}'],
-        ['array{bar: string}', 'array{foo?: string, bar: int}'],
-        // Intersection
-        ['bool', 'array{foo: string}&array{bar: int}'],
-        // Literal
-        ['string', '\'test\''],
-        ['string', '"test"'],
-        ['"foo"', '"bar"'],
-        ['23', '27'],
-        ['int', '27'],
-        // Collections
-        ['list<string>', 'array<string, string>'],
-        ['iterable', 'array'],
-        ['string', 'iterable'],
-        ['iterable<int, string>', 'iterable<string, int>'],
-        ['float', 'array'],
-        ['iterable<string, float>', 'iterable<string, int>'],
-        ['iterable<bool, int>', 'iterable<string, int>'],
-        ['float', 'list'],
-        ['int', 'string|null'],
-        ['array{foo: int}', 'array<string, string>'],
-        // Classes
-        ['FooInterface', 'Foo'],
-        ['Popo', 'FooInterface'],
-        ['string', 'Foo'],
-    ];
-
     private Scope $scope;
+
+    /**
+     * @return iterable<int, string>
+     */
+    private static function lines(string $file): iterable
+    {
+        $handle = \Safe\fopen($file, 'r');
+        while (true) {
+            $line = fgets($handle);
+            if ($line === false) {
+                break;
+            }
+
+            yield trim($line);
+        }
+        \Safe\fclose($handle);
+    }
+
+    private static function shouldBeIgnored(string $line): bool
+    {
+        return $line === '' || str_starts_with($line, '>');
+    }
+
+    private static function isSectionTitle(string $line): bool
+    {
+        return str_starts_with($line, '# ');
+    }
+
+    /**
+     * @param non-empty-string $separator
+     * @return iterable<string, array{string, string}>
+     */
+    private static function readCases(string $file, string $separator): iterable
+    {
+        $section = '';
+        foreach (self::lines($file) as $line) {
+            if (self::shouldBeIgnored($line)) {
+                continue;
+            }
+            if (self::isSectionTitle($line)) {
+                $section = \Safe\substr($line, 2);
+                continue;
+            }
+            [$supertype, $subtype] = explode($separator, \Safe\substr($line, 2));
+            $supertype = trim($supertype, '`');
+            $subtype = trim($subtype, '`');
+            yield $section . ': ' . $supertype . $separator . $subtype => [$subtype, $supertype];
+        }
+    }
 
     /**
      * @dataProvider compatibleTypes
@@ -181,9 +86,7 @@ class TypeCompatibilityTest extends TestCase
      */
     public function compatibleTypes(): iterable
     {
-        foreach (self::COMPATIBLE_TYPES as [$subtype, $supertype]) {
-            yield \Safe\sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
-        }
+        return self::readCases(__DIR__ . '/CompatibleTypes.md', ' accepts ');
     }
 
     /**
@@ -202,9 +105,7 @@ class TypeCompatibilityTest extends TestCase
      */
     public function incompatibleTypes(): iterable
     {
-        foreach (self::INCOMPATIBLE_TYPES as [$subtype, $supertype]) {
-            yield \Safe\sprintf('%s is subtype of %s', $subtype, $supertype) => [$subtype, $supertype];
-        }
+        return self::readCases(__DIR__ . '/IncompatibleTypes.md', ' doesn\'t accept ');
     }
 
     protected function setUp(): void
