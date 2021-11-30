@@ -4,68 +4,68 @@
 > notation.
 
 # Simple
-- string
-- int
-- float
-- bool
-- true
-- false
-- (int) -> int
-- ((int)) -> int
+- `string`
+- `int`
+- `float`
+- `bool`
+- `true`
+- `false`
+- `(int)` -> `int`
+- `((int))` -> `int`
 
 # Unions
-- string|int
-- string|int|float
-- list<string>|list<int>
-- list<string|int>
+- `string|int`
+- `string|int|float`
+- `list<string>|list<int>`
+- `list<string|int>`
 
 # Intersections
-- Foo&Bar
+- `Foo&Bar`
 
 # Generics
-- list<string>
-- array<string, bool>
-- array<string, array<string, int>>
+- `list<string>`
+- `array<string, bool>`
+- `array<string, array<string, int>>`
 
 # Callable
-- callable -> callable(): mixed
-- callable(): void
-- callable(string): void
-- callable(string): int
-- callable(string, bool): float
-- callable(list<int>, string, array<int, bool>): string
-- callable(): (string|int)
-- callable(): (array{foo: string}&array{bar: int})
+- `callable` -> `callable(): mixed`
+- `callable(): void`
+- `callable(string): void`
+- `callable(string): int`
+- `callable(string, bool): float`
+- `callable(list<int>, string, array<int, bool>): string`
+- `callable(): (string|int)`
+- `callable(): (array{foo: string}&array{bar: int})`
 
 # Tuples
-- array{string, int}
-- array{array{int, bool}, int}
+- `array{string, int}`
+- `array{array{int, bool}, int}`
 
 # Structs
-- array{foo: string}
-- array{foo: string, bar: int}
-- array{optional?: float}
+- `array{foo: string}`
+- `array{foo: string, bar: int}`
+- `array{optional?: float}`
 
 # Literals
-- 'test'
-- "test" -> 'test'
-- 0
-- 1
-- 69
-- -1
-- -23
-- 99999999
+- `'test'`
+- `"test"` -> `'test'`
+- `0`
+- `1`
+- `69`
+- `-1`
+- `-23`
+- `99999999`
 
 # Aliases
-- array-key -> string|int
+- `array-key` -> `string|int`
 
 # Collections
-- array -> array<string|int, mixed>
-- array<bool> -> array<string|int, bool>
-- array<string, int>
-- list -> list<mixed>
-- list<float>
-- iterable -> iterable<mixed, mixed>
-- iterable<string> -> iterable<mixed, string>
-- iterable<string, int>
-- Foo
+- `array` -> `array<string|int, mixed>`
+- `array<bool>` -> `array<string|int, bool>`
+- `array<string, int>`
+- `list` -> `list<mixed>`
+- `list<float>`
+- `iterable` -> `iterable<mixed, mixed>`
+- `iterable<string>` -> `iterable<mixed, string>`
+- `iterable<string, int>`
+- `Foo`

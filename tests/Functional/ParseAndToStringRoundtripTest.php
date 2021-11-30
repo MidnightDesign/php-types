@@ -7,59 +7,12 @@ namespace PhpTypes\Test\Functional;
 use PhpTypes\ClassType;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
-use function explode;
-use function fgets;
-use function str_starts_with;
-use function trim;
+use function count;
 
 final class ParseAndToStringRoundtripTest extends TestCase
 {
     private Scope $scope;
-
-    /**
-     * @return iterable<int, string>
-     */
-    private static function lines(string $file): iterable
-    {
-        $handle = \Safe\fopen($file, 'r');
-        while (true) {
-            $line = fgets($handle);
-            if ($line === false) {
-                break;
-            }
-
-            yield trim($line);
-        }
-        \Safe\fclose($handle);
-    }
-
-    private static function shouldBeIgnored(string $line): bool
-    {
-        return $line === '' || str_starts_with($line, '>');
-    }
-
-    private static function isSectionTitle(string $line): bool
-    {
-        return str_starts_with($line, '# ');
-    }
-
-    private static function isTestCase(string $line): bool
-    {
-        return str_starts_with($line, '- ');
-    }
-
-    /**
-     * @return array{string, string}
-     */
-    private static function parseTestCase(string $line): array
-    {
-        $parts = explode(' -> ', \Safe\substr($line, 2));
-        $from = $parts[0];
-        $expected = $parts[1] ?? $from;
-        return [$from, $expected];
-    }
 
     /**
      * @dataProvider cases
@@ -76,22 +29,8 @@ final class ParseAndToStringRoundtripTest extends TestCase
      */
     public function cases(): iterable
     {
-        $section = '';
-        foreach (self::lines(__DIR__ . '/ParseAndToString.md') as $line) {
-            if (self::shouldBeIgnored($line)) {
-                continue;
-            }
-
-            if (self::isSectionTitle($line)) {
-                $section = \Safe\substr($line, 2);
-                continue;
-            }
-
-            if (!self::isTestCase($line)) {
-                throw new RuntimeException('Unexpected line: ' . $line);
-            }
-
-            [$from, $expected] = self::parseTestCase($line);
+        foreach (TestCaseLoader::loadTypes(__DIR__ . '/ParseAndToString.md', ' -> ') as $section => $types) {
+            [$from, $expected] = count($types) === 1 ? [$types[0], $types[0]] : $types;
             yield $section . ': ' . $from . ' -> ' . $expected => [$from, $expected];
         }
     }
