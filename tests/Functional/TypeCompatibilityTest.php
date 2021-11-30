@@ -8,68 +8,14 @@ use PhpTypes\ClassType;
 use PhpTypes\Scope;
 use PHPUnit\Framework\TestCase;
 
-use function explode;
-use function fgets;
-use function str_starts_with;
-use function trim;
-
 class TypeCompatibilityTest extends TestCase
 {
     private Scope $scope;
 
     /**
-     * @return iterable<int, string>
-     */
-    private static function lines(string $file): iterable
-    {
-        $handle = \Safe\fopen($file, 'r');
-        while (true) {
-            $line = fgets($handle);
-            if ($line === false) {
-                break;
-            }
-
-            yield trim($line);
-        }
-        \Safe\fclose($handle);
-    }
-
-    private static function shouldBeIgnored(string $line): bool
-    {
-        return $line === '' || str_starts_with($line, '>');
-    }
-
-    private static function isSectionTitle(string $line): bool
-    {
-        return str_starts_with($line, '# ');
-    }
-
-    /**
-     * @param non-empty-string $separator
-     * @return iterable<string, array{string, string}>
-     */
-    private static function readCases(string $file, string $separator): iterable
-    {
-        $section = '';
-        foreach (self::lines($file) as $line) {
-            if (self::shouldBeIgnored($line)) {
-                continue;
-            }
-            if (self::isSectionTitle($line)) {
-                $section = \Safe\substr($line, 2);
-                continue;
-            }
-            [$supertype, $subtype] = explode($separator, \Safe\substr($line, 2));
-            $supertype = trim($supertype, '`');
-            $subtype = trim($subtype, '`');
-            yield $section . ': ' . $supertype . $separator . $subtype => [$subtype, $supertype];
-        }
-    }
-
-    /**
      * @dataProvider compatibleTypes
      */
-    public function testCompatibleTypes(string $subtype, string $supertype): void
+    public function testCompatibleTypes(string $supertype, string $subtype): void
     {
         $super = $this->scope->parse($supertype);
         $sub = $this->scope->parse($subtype);
@@ -86,13 +32,15 @@ class TypeCompatibilityTest extends TestCase
      */
     public function compatibleTypes(): iterable
     {
-        return self::readCases(__DIR__ . '/CompatibleTypes.md', ' accepts ');
+        foreach (TestCaseLoader::loadTypes(__DIR__ . '/CompatibleTypes.md', ' accepts ') as $section => $types) {
+            yield $section . ': ' . $types[0] . ' accepts ' . $types[1] => [$types[0], $types[1]];
+        }
     }
 
     /**
      * @dataProvider incompatibleTypes
      */
-    public function testIncompatibleTypes(string $subtype, string $supertype): void
+    public function testIncompatibleTypes(string $supertype, string $subtype): void
     {
         self::assertFalse(
             $this->scope->parse($supertype)->isSupertypeOf($this->scope->parse($subtype)),
@@ -105,7 +53,10 @@ class TypeCompatibilityTest extends TestCase
      */
     public function incompatibleTypes(): iterable
     {
-        return self::readCases(__DIR__ . '/IncompatibleTypes.md', ' doesn\'t accept ');
+        $cases = TestCaseLoader::loadTypes(__DIR__ . '/IncompatibleTypes.md', ' doesn\'t accept ');
+        foreach ($cases as $section => $types) {
+            yield $section . ': ' . $types[0] . ' accepts ' . $types[1] => [$types[0], $types[1]];
+        }
     }
 
     protected function setUp(): void
