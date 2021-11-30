@@ -87,6 +87,19 @@ class PhpTypesBaseListener implements PhpTypesListener
 	 *
 	 * The default implementation does nothing.
 	 */
+	public function enterParenExpr(Context\ParenExprContext $context) : void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitParenExpr(Context\ParenExprContext $context) : void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
 	public function enterCallableExpr(Context\CallableExprContext $context) : void {}
 
 	/**

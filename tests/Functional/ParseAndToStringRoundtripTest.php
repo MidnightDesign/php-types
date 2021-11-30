@@ -20,6 +20,8 @@ final class ParseAndToStringRoundtripTest extends TestCase
         'bool',
         'true',
         'false',
+        '(int)' => 'int',
+        '((int))' => 'int',
         // Unions
         'string|int',
         'string|int|float',
@@ -38,6 +40,8 @@ final class ParseAndToStringRoundtripTest extends TestCase
         'callable(string): int',
         'callable(string, bool): float',
         'callable(list<int>, string, array<int, bool>): string',
+        'callable(): (string|int)',
+        'callable(): (array{foo: string}&array{bar: int})',
         // Tuples
         'array{string, int}',
         'array{array{int, bool}, int}',

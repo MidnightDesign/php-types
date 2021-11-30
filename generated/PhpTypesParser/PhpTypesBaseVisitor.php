@@ -75,6 +75,17 @@ class PhpTypesBaseVisitor extends AbstractParseTreeVisitor implements PhpTypesVi
 	 * The default implementation returns the result of calling
 	 * {@see self::visitChildren()} on `context`.
 	 */
+	public function visitParenExpr(Context\ParenExprContext $context)
+	{
+	    return $this->visitChildren($context);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation returns the result of calling
+	 * {@see self::visitChildren()} on `context`.
+	 */
 	public function visitCallableExpr(Context\CallableExprContext $context)
 	{
 	    return $this->visitChildren($context);

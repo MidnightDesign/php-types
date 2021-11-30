@@ -28,6 +28,8 @@ class TypeCompatibilityTest extends TestCase
         ['object', 'object'],
         ['array', 'iterable'],
         ['Foo', 'object'],
+        ['int', '(int)'],
+        ['(int)', 'int'],
         // Unions
         ['string', 'string|int'],
         ['int', 'string|int'],
@@ -44,6 +46,7 @@ class TypeCompatibilityTest extends TestCase
         ['callable(): mixed', 'callable'],
         ['callable', 'callable(): mixed'],
         ['callable(): int', 'callable'],
+        ['callable(): string', 'callable(): (int|string)'],
         // Tuples
         ['array{string, int}', 'array{string, int}'],
         ['array{string, int}', 'array{string}'],
@@ -97,6 +100,9 @@ class TypeCompatibilityTest extends TestCase
         // Classes
         ['Foo', 'Foo'],
         ['Foo', 'FooInterface'],
+        // Parens
+        ['string', '(callable(): string)|string'],
+        ['callable(): string', '(callable(): string)|string'],
     ];
     private const INCOMPATIBLE_TYPES = [
         // Simple

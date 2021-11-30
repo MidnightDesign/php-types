@@ -64,6 +64,16 @@ interface PhpTypesVisitor extends ParseTreeVisitor
 	public function visitCurlyArrayExpr(Context\CurlyArrayExprContext $context);
 
 	/**
+	 * Visit a parse tree produced by the `ParenExpr` labeled alternative
+	 * in {@see PhpTypesParser::typeExpr()}.
+	 *
+	 * @param Context\ParenExprContext $context The parse tree.
+	 *
+	 * @return mixed The visitor result.
+	 */
+	public function visitParenExpr(Context\ParenExprContext $context);
+
+	/**
 	 * Visit a parse tree produced by the `CallableExpr` labeled alternative
 	 * in {@see PhpTypesParser::typeExpr()}.
 	 *
