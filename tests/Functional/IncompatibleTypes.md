@@ -36,7 +36,7 @@
 - `array{foo: string}&array{bar: int}` doesn't accept `bool`
 
 # Literal
-- `\'test\'` doesn't accept `string`
+- `'test'` doesn't accept `string`
 - `"test"` doesn't accept `string`
 - `"bar"` doesn't accept `"foo"`
 - `27` doesn't accept `23`
