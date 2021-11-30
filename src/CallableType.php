@@ -31,7 +31,10 @@ class CallableType implements TypeInterface
 
     public function __toString(): string
     {
-        return 'callable(' . implode(', ', $this->arguments) . '): ' . $this->returnType;
+        $return = $this->returnType instanceof UnionType || $this->returnType instanceof IntersectionType
+            ? '(' . $this->returnType . ')'
+            : $this->returnType;
+        return 'callable(' . implode(', ', $this->arguments) . '): ' . $return;
     }
 
     public function isSupertypeOf(TypeInterface $other): bool
