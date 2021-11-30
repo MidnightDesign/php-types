@@ -54,12 +54,12 @@
 
 # String Literals
 - `"test"` accepts `"test"`
-- `\'test\'` accepts `\'test\'`
-- `"test"` accepts `\'test\'`
-- `\'test\'` accepts `"test"`
+- `'test'` accepts `'test'`
+- `"test"` accepts `'test'`
+- `'test'` accepts `"test"`
 - `string` accepts `"test"`
-- `string` accepts `\'test\'`
-- `mixed` accepts `\'test\'`
+- `string` accepts `'test'`
+- `mixed` accepts `'test'`
 - `mixed` accepts `"test"`
 
 # Int Literals
