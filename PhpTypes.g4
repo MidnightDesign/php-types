@@ -28,8 +28,8 @@ curlyArrayEntry
     ;
 
 stringLiteral
-    : SingleQuote Identifier SingleQuote
-    | DoubleQuote Identifier DoubleQuote
+    : SingleQuote Identifier? SingleQuote
+    | DoubleQuote Identifier? DoubleQuote
     ;
 
 IntLiteral

@@ -203,8 +203,7 @@ final class Parser
     private static function fromStringLiteral(StringLiteralContext $stringLiteral): StringLiteralType
     {
         $identifier = $stringLiteral->Identifier();
-        assert($identifier !== null);
-        $text = $identifier->getText();
+        $text = $identifier === null ? '' : $identifier->getText();
         assert($text !== null);
         return new StringLiteralType($text);
     }

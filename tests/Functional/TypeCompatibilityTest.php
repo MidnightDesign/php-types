@@ -55,7 +55,7 @@ class TypeCompatibilityTest extends TestCase
     {
         $cases = TestCaseLoader::loadTypes(__DIR__ . '/IncompatibleTypes.md', ' doesn\'t accept ');
         foreach ($cases as $section => $types) {
-            yield $section . ': ' . $types[0] . ' accepts ' . $types[1] => [$types[0], $types[1]];
+            yield $section . ': ' . $types[0] . ' doesn\'t accept ' . $types[1] => [$types[0], $types[1]];
         }
     }
 

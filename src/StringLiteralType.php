@@ -22,4 +22,9 @@ final class StringLiteralType implements TypeInterface
     {
         return $other instanceof self && $other->text === $this->text;
     }
+
+    public function toStringType(): StringType
+    {
+        return $this->text === '' ? StringType::instance() : StringType::nonEmpty();
+    }
 }

@@ -17,6 +17,9 @@
 - `object` accepts `Foo`
 - `(int)` accepts `int`
 - `int` accepts `(int)`
+- `string` accepts `non-empty-string`
+- `non-empty-string` accepts `'a'`
+- `non-empty-string` accepts `non-empty-string`
 
 # Unions
 - `string|int` accepts `string`
