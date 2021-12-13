@@ -4,6 +4,7 @@
 > notation.
 
 # Simple
+
 - `string`
 - `int`
 - `float`
@@ -14,20 +15,33 @@
 - `((int))` -> `int`
 
 # Unions
+
 - `string|int`
 - `string|int|float`
 - `list<string>|list<int>`
 - `list<string|int>`
+- `string|string` -> `string`
+- `string|string|string` -> `string`
+- `string|'a'` -> `string`
+- `'a'|string` -> `string`
+- `'a'|string|'b'|string` -> `string`
+- `mixed|string|non-empty-string|'a'` -> `mixed`
+- `'a'|non-empty-string|string|mixed` -> `mixed`
+- `string|list<int>|array<array-key, int|string>|'foo'` -> `string|array<string|int, int|string>`
+- `list<string|int>|list<int|string>` -> `list<string|int>`
 
 # Intersections
+
 - `Foo&Bar`
 
 # Generics
+
 - `list<string>`
 - `array<string, bool>`
 - `array<string, array<string, int>>`
 
 # Callable
+
 - `callable` -> `callable(): mixed`
 - `callable(): void`
 - `callable(string): void`
@@ -38,15 +52,18 @@
 - `callable(): (array{foo: string}&array{bar: int})`
 
 # Tuples
+
 - `array{string, int}`
 - `array{array{int, bool}, int}`
 
 # Structs
+
 - `array{foo: string}`
 - `array{foo: string, bar: int}`
 - `array{optional?: float}`
 
 # Literals
+
 - `'test'`
 - `"test"` -> `'test'`
 - `0`
@@ -57,9 +74,11 @@
 - `99999999`
 
 # Aliases
+
 - `array-key` -> `string|int`
 
 # Collections
+
 - `array` -> `array<string|int, mixed>`
 - `array<bool>` -> `array<string|int, bool>`
 - `array<string, int>`
