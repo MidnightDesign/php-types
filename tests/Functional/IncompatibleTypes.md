@@ -8,6 +8,8 @@
 - `false` doesn't accept `bool`
 - `object` doesn't accept `mixed`
 - `string` doesn't accept `string|int`
+- `non-empty-string` doesn't accept `string`
+- `non-empty-string` doesn't accept `''`
 
 # Union
 - `int|string` doesn't accept `string|int|bool`

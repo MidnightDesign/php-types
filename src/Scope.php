@@ -34,6 +34,7 @@ final class Scope
             $global->register('mixed', MixedType::instance());
             $global->register('int', IntType::instance());
             $global->register('string', StringType::instance());
+            $global->register('non-empty-string', StringType::nonEmpty());
             $global->register('float', FloatType::instance());
             $global->register('bool', BoolType::instance());
             $global->register('void', VoidType::instance());
