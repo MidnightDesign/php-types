@@ -175,7 +175,7 @@ final class Parser
     /**
      * @param Resolve $resolve
      */
-    private static function fromUnion(UnionContext $context, callable $resolve): UnionType
+    private static function fromUnion(UnionContext $context, callable $resolve): TypeInterface
     {
         $alternatives = [];
         /** @var list<TypeExprContext> $typeExpr */

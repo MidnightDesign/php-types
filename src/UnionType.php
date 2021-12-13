@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PhpTypes;
 
+use function array_merge;
+use function array_splice;
+use function count;
 use function implode;
 
 /**
@@ -22,9 +25,57 @@ final class UnionType implements TypeInterface
      * @param list<TypeInterface> $alternatives
      * @psalm-pure
      */
-    public static function create(array $alternatives): self
+    public static function create(array $alternatives): TypeInterface
     {
-        return new self($alternatives);
+        $alternatives = self::flatten($alternatives);
+        $reduced = self::reduceAlternatives($alternatives);
+        if (count($reduced) === 1) {
+            return $reduced[0];
+        }
+        return new self($reduced);
+    }
+
+    /**
+     * @param list<TypeInterface> $alternatives
+     * @return list<TypeInterface>
+     * @psalm-pure
+     */
+    private static function reduceAlternatives(array $alternatives): array
+    {
+        $i = count($alternatives) - 1;
+        while (true) {
+            $current = $alternatives[$i] ?? null;
+            if ($current === null) {
+                break;
+            }
+            foreach ($alternatives as $index => $other) {
+                if ($index === $i || !$other->isSupertypeOf($current)) {
+                    continue;
+                }
+                array_splice($alternatives, $i, 1);
+                continue 2;
+            }
+            $i--;
+        }
+        return $alternatives;
+    }
+
+    /**
+     * @param list<TypeInterface> $alternatives
+     * @return list<TypeInterface>
+     * @psalm-pure
+     */
+    private static function flatten(array $alternatives): array
+    {
+        $flattened = [];
+        foreach ($alternatives as $alternative) {
+            if ($alternative instanceof UnionType) {
+                $flattened = array_merge($flattened, self::flatten($alternative->alternatives));
+            } else {
+                $flattened[] = $alternative;
+            }
+        }
+        return $flattened;
     }
 
     public function __toString(): string
