@@ -12,29 +12,26 @@ final class StringType implements TypeInterface
     private static self|null $instance = null;
     private static self|null $nonEmpty = null;
 
-    private bool $canBeEmpty = true;
-
-    /**
-     * @psalm-mutation-free
-     */
-    public static function instance(): self
+    public function __construct(private bool $canBeEmpty = true)
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
     }
 
     /**
-     * @psalm-mutation-free
+     * @psalm-pure
+     */
+    public static function instance(): self
+    {
+        /** @psalm-suppress ImpureStaticProperty */
+        return self::$instance ??= new self(true);
+    }
+
+    /**
+     * @psalm-pure
      */
     public static function nonEmpty(): self
     {
-        if (self::$nonEmpty === null) {
-            self::$nonEmpty = new self();
-            self::$nonEmpty->canBeEmpty = false;
-        }
-        return self::$nonEmpty;
+        /** @psalm-suppress ImpureStaticProperty */
+        return self::$nonEmpty ??= new self(false);
     }
 
     public function __toString(): string
