@@ -95,3 +95,4 @@
 - `diff<23|'foo'|42|'bar', string>` -> `23|42`
 - `diff<array{type: 'a', age: int}|array{type: 'b', name: string}, array{type: 'a'}>` -> `array{type: 'b', name: string}`
 - `diff<array{name: string}, array{name: 'John'}>` -> `array{name: diff<string, 'John'>}`
+- `diff<int|(callable(): int), callable>` -> `int`
