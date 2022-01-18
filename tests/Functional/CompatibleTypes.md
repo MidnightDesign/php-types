@@ -1,4 +1,5 @@
 # Basic types
+
 - `string` accepts `string`
 - `int` accepts `int`
 - `float` accepts `float`
@@ -22,6 +23,7 @@
 - `non-empty-string` accepts `non-empty-string`
 
 # Unions
+
 - `string|int` accepts `string`
 - `string|int` accepts `int`
 - `string|float|int` accepts `float`
@@ -32,6 +34,7 @@
 - `string|null` accepts `null`
 
 # Callables
+
 - `callable(string|int): void` accepts `callable(string): void`
 - `callable(): string|int` accepts `callable(): string`
 - `callable(): void` accepts `callable(): string`
@@ -41,11 +44,13 @@
 - `callable(): (int|string)` accepts `callable(): string`
 
 # Tuples
+
 - `array{string, int}` accepts `array{string, int}`
 - `array{string}` accepts `array{string, int}`
 - `array{string, int|bool}` accepts `array{string, int}`
 
 # Structs
+
 - `array{foo: string}` accepts `array{foo: string}`
 - `array{foo: string|int}` accepts `array{foo: string}`
 - `array{foo: string, bar: int}` accepts `array{foo: string, bar: int}`
@@ -56,6 +61,7 @@
 - `array{foo?: string}` accepts `array{foo?: string}`
 
 # String Literals
+
 - `"test"` accepts `"test"`
 - `'test'` accepts `'test'`
 - `"test"` accepts `'test'`
@@ -66,6 +72,7 @@
 - `mixed` accepts `"test"`
 
 # Int Literals
+
 - `0` accepts `0`
 - `int` accepts `0`
 - `1` accepts `1`
@@ -78,6 +85,7 @@
 - `int` accepts `-69`
 
 # Collections
+
 - `list<int>` accepts `list<int>`
 - `array<int, string>` accepts `list<string>`
 - `iterable<string>` accepts `array<string>`
@@ -96,9 +104,20 @@
 - `list` accepts `list<mixed>`
 
 # Classes
+
 - `Foo` accepts `Foo`
 - `FooInterface` accepts `Foo`
 
 # Parens
+
 - `(callable(): string)|string` accepts `string`
 - `(callable(): string)|string` accepts `callable(): string`
+
+# Difference
+
+- `diff<string, 'foo'>` accepts `string`
+- `diff<string, 'foo'>` accepts `'foo'|'bar'`
+- `diff<mixed, float>` accepts `int`
+- `diff<mixed, float>` accepts `string`
+- `diff<mixed, float>` accepts `array<string, string>`
+- `diff<string|int, 'foo'|'bar'>` accepts `diff<string|int, 'foo'|'bar'>`

@@ -12,7 +12,7 @@ use function implode;
 /**
  * @psalm-immutable
  */
-final class UnionType implements TypeInterface
+final class UnionType implements TypeInterface, DiffableInterface
 {
     /**
      * @param list<TypeInterface> $alternatives
@@ -115,5 +115,20 @@ final class UnionType implements TypeInterface
             return false;
         }
         return true;
+    }
+
+    public function difference(TypeInterface $other): ?TypeInterface
+    {
+        $newAlternatives = [];
+        foreach ($this->alternatives as $alternative) {
+            if ($other->isSupertypeOf($alternative)) {
+                continue;
+            }
+            $newAlternatives[] = $alternative;
+        }
+        if (count($newAlternatives) === count($this->alternatives)) {
+            return $this;
+        }
+        return self::create($newAlternatives);
     }
 }

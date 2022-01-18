@@ -47,6 +47,7 @@ final class Scope
             $global->register('iterable', IterableType::class);
             $global->register('list', ListType::class);
             $global->register('array', ArrayType::class);
+            $global->register('diff', DiffType::class);
             self::$global = $global;
         }
         return self::$global;
