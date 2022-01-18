@@ -21,6 +21,7 @@ class StructType implements TypeInterface, KeyValueTypeInterface, DiffableInterf
     }
 
     /**
+     * @psalm-pure
      * @param array<string, array{type: TypeInterface, optional: bool}> $fields
      */
     public static function create(array $fields): self
@@ -89,7 +90,7 @@ class StructType implements TypeInterface, KeyValueTypeInterface, DiffableInterf
         }
         $newFields = [];
         foreach ($this->fields as $key => $fieldDefinition) {
-            $otherFieldDefinition = $other->fields[$key];
+            $otherFieldDefinition = $other->fields[$key] ?? null;
             if ($otherFieldDefinition === null) {
                 $newFields[$key] = $fieldDefinition;
                 continue;
