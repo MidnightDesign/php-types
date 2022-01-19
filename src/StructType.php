@@ -96,7 +96,7 @@ class StructType implements TypeInterface, KeyValueTypeInterface, DiffableInterf
                 continue;
             }
             $newFields[$key] = [
-                'type' => SetOperations::difference($fieldDefinition['type'], $otherFieldDefinition['type']),
+                'type' => TypeOperations::difference($fieldDefinition['type'], $otherFieldDefinition['type']),
                 'optional' => $fieldDefinition['optional'],
             ];
         }

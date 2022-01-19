@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpTypes;
 
-final class SetOperations
+final class TypeOperations
 {
     /**
      * @psalm-pure
@@ -16,6 +16,9 @@ final class SetOperations
             if ($diff !== null) {
                 return $diff;
             }
+        }
+        if (!$a->isSupertypeOf($b)) {
+            return $a;
         }
         return new DiffType($a, $b);
     }
