@@ -11,7 +11,7 @@ use function implode;
 /**
  * @psalm-immutable
  */
-class StructType implements TypeInterface, KeyValueTypeInterface
+class StructType implements TypeInterface, KeyValueTypeInterface, DiffableInterface
 {
     /**
      * @param array<string, array{type: TypeInterface, optional: bool}> $fields
@@ -21,6 +21,7 @@ class StructType implements TypeInterface, KeyValueTypeInterface
     }
 
     /**
+     * @psalm-pure
      * @param array<string, array{type: TypeInterface, optional: bool}> $fields
      */
     public static function create(array $fields): self
@@ -80,5 +81,25 @@ class StructType implements TypeInterface, KeyValueTypeInterface
             $valueTypes[] = $fieldDefinition['type'];
         }
         return UnionType::create($valueTypes);
+    }
+
+    public function difference(TypeInterface $other): ?TypeInterface
+    {
+        if (!$other instanceof self) {
+            return null;
+        }
+        $newFields = [];
+        foreach ($this->fields as $key => $fieldDefinition) {
+            $otherFieldDefinition = $other->fields[$key] ?? null;
+            if ($otherFieldDefinition === null) {
+                $newFields[$key] = $fieldDefinition;
+                continue;
+            }
+            $newFields[$key] = [
+                'type' => TypeOperations::difference($fieldDefinition['type'], $otherFieldDefinition['type']),
+                'optional' => $fieldDefinition['optional'],
+            ];
+        }
+        return self::create($newFields);
     }
 }

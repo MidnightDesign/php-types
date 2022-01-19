@@ -110,6 +110,9 @@ final class Parser
         assert($identifier !== null);
         $typeName = $identifier->getText();
         assert($typeName !== null);
+        if ($typeName === 'diff') {
+            return TypeOperations::difference(...$typeArguments);
+        }
         return $resolve($typeName, $typeArguments);
     }
 
