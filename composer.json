@@ -1,12 +1,12 @@
 {
-    "name": "vendor_name/antlr.php-types-parser-for-php",
+    "name": "midnight/php-types",
     "description": "description",
     "minimum-stability": "stable",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
-            "name": "rgott",
-            "email": "email@example.com"
+            "name": "Rudolph Gottesheim",
+            "email": "r.gottesheim@midnight-design.at"
         }
     ],
     "require": {
